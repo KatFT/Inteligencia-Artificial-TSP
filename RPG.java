@@ -1,6 +1,10 @@
 import java.util.Scanner;
 import java.awt.geom.Point2D; //para as coordenadas
 import java.util.Random; //para criar pontos randoms
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 
 class Grafo{
 	int tamanho; // numero de nos no grafo
@@ -18,13 +22,27 @@ class Grafo{
 	//funçao geradora de pontos (Random)
 	void criacaoPontos(int n,int m){
 		double x,y;
+		int i=0;
 		Random seed= new Random();
-		for(int i=0;i<n;i++){
+		while(i<n){
 			//int number = random.nextInt(max - min) + min;
 			x= (double)seed.nextInt(2*m) -m;
 			y=(double)seed.nextInt(2*m) -m;
-			arrayC[tamanho++]= new Point2D.Double(x,y);
+			if(!verificarPontos(x,y)){ // vai verificar se existe pontos repetidos
+				arrayC[tamanho++]= new Point2D.Double(x,y);
+				i++;
+			}
 		}
+	}
+
+	boolean verificarPontos(double x, double y){
+		if(this.tamanho==0)
+			return false;
+		for(int i=0;i<this.tamanho;i++){
+			if(x==arrayC[i].getX() && y==arrayC[i].getY())
+				return true;
+		}
+		return false;
 	}
 
 	void printArrayPontos(){
@@ -53,8 +71,8 @@ class Grafo{
 			}
 		}
 	}
-
-	void permutation(){
+	//este funciona porem pode criar ciclos dentro do grafo
+	/*void permutation(){
 		int x;
 		for(int i=0;i<this.tamanho;i++){
 			Random number= new Random();
@@ -68,7 +86,29 @@ class Grafo{
 			//System.out.println(" -> ("+(int) arrayC[i].getX()+","+(int) arrayC[i].getY()+")");
 		}
 		System.out.println();
+	}*/
+
+	void permutation(){
+		Random number= new Random();
+		for(int i=1;i<this.tamanho;i++){
+			int swap= number.nextInt(this.tamanho);
+			Point2D tmp= arrayC[swap];
+			arrayC[swap]=arrayC[i];
+			arrayC[i]=tmp;
+			adj[i][i-1]=adj[i-1][i]=true;
+			//visitados[i]=true;
+			System.out.print("("+i+","+(i-1)+")");
+			//System.out.print("("+(int) arrayC[i-1].getX()+","+(int) arrayC[i-1].getY()+")");
+			//System.out.println(" -> ("+(int) arrayC[i].getX()+","+(int) arrayC[i].getY()+")");
+		}
+		System.out.print("("+0+","+(this.tamanho-1)+")");
+
+		adj[this.tamanho-1][0]=adj[0][this.tamanho-1];
+
+		System.out.println();
+
 	}
+
 
 	void nnf(){
 		int x;
