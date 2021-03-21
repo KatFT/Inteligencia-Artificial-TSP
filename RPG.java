@@ -196,10 +196,11 @@ public class RPG{
 		int ex= ler.nextInt();
 
 
-
+		System.out.print("Ex1: ");
 		System.out.print("      Array de Original: ");
 		garf.printArrayPontos();
 
+		System.out.print("Ex2: ");
 		switch(ex){
 			case 1: System.out.print("   Permutação de pontos: ");
 					garf.permutation();
@@ -211,11 +212,13 @@ public class RPG{
 					break;
 		}
 		System.out.println("_____________________________________________________________________________________");
-		System.out.print("\nVizinhaça obtida por 2-exchange:  ");
+		System.out.println("Ex3: ");
+		System.out.print("Vizinhaça obtida por 2-exchange:  ");
 		garf.exchange();
 		garf.printArrayPontos();
 
-		System.out.println("_____________________________________________________________________________________");
+		System.out.println("\n_____________________________________________________________________________________");
+		System.out.println("Ex4: ");
 		System.out.println("Escolha uma das seguintes alternativas para escolher o candidato na vizinhança “2-exchange”:");
 		System.out.println("1-Minimo Perímetro - 'best-improvement first'");
 		System.out.println("2-Primeiro candidato nessa vizinhança - 'first-improvement'");
