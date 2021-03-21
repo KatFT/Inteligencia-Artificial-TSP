@@ -96,12 +96,11 @@ class Grafo{
 			arrayC[swap]=arrayC[i];
 			arrayC[i]=tmp;
 			adj[i][i-1]=adj[i-1][i]=true;
-			//visitados[i]=true;
-			System.out.print("("+i+","+(i-1)+")");
+			//System.out.print("("+i+","+(i-1)+")");
 			//System.out.print("("+(int) arrayC[i-1].getX()+","+(int) arrayC[i-1].getY()+")");
 			//System.out.println(" -> ("+(int) arrayC[i].getX()+","+(int) arrayC[i].getY()+")");
 		}
-		System.out.print("("+0+","+(this.tamanho-1)+")");
+		//System.out.print("("+0+","+(this.tamanho-1)+")");
 
 		adj[this.tamanho-1][0]=adj[0][this.tamanho-1];
 
@@ -143,6 +142,36 @@ class Grafo{
 		}
 		adj[0][this.tamanho-1]=adj[this.tamanho-1][0]=true;
 	}
+
+	//verifica se os segmentos se itersetam
+	boolean intersecao(Point2D a, Point2D b, Point2D c, Point2D d) {
+	    double det = (b.getX() - a.getX()) * (d.getY() - c.getY()) - (d.getX() - c.getX()) * (b.getY() - a.getY());
+	    if (det == 0)
+	        return false; //Lines are parallel
+	    double lambda = ((d.getY() - c.getY()) * (d.getX() - a.getX()) + (c.getX() - d.getX()) * (d.getY() - a.getY())) / det;
+	    double gamma = ((a.getY() - b.getY()) * (d.getX()- a.getX()) + (b.getX() - a.getX()) * (d.getY() - a.getY())) / det;
+	    return (0 < lambda && lambda < 1) && (0 < gamma && gamma < 1);
+	}
+
+	void exchange(){
+		printArrayPontos();
+
+		for(int i=1;i<this.tamanho;i++){
+			for(int j=1;j<this.tamanho;j++){
+				if(j!=(i-1) && j!=i && (j-1)!=i && (j-1)!=(i-1)){
+					//se houver interseção, então vai haver a troca de segmentos
+					if(intersecao(arrayC[i],arrayC[i-1],arrayC[j],arrayC[j-1])){
+						Point2D temp= arrayC[i];
+						arrayC[i] = arrayC[j-1];
+						arrayC[j-1]=temp;
+						System.out.print("("+(int) arrayC[i].getX()+","+(int) arrayC[i].getY()+")");
+						System.out.println(" -> ("+(int) arrayC[j-1].getX()+","+(int) arrayC[j-1].getY()+")");
+					}
+
+				}
+			}
+		}
+	}
 }
 
 
@@ -160,6 +189,7 @@ public class RPG{
 		System.out.println("1-Gerar aleatoriamentende pontos no plano com coordenadas inteiras, de −m a m, para n e m dados.");
 		System.out.println("2-Gerar uma permutação qualquer dos pontos.");
 		System.out.println("3-Heurıstica'nearest-neighbour first'");
+		System.out.println("4-Determinar vizinhaça obtida por 2-exchange");
 		int ex= ler.nextInt();
 		switch(ex){
 			case 1: garf.criacaoPontos(n,m);
@@ -175,6 +205,17 @@ public class RPG{
 					garf.nnf();
 					garf.printArrayMatriz();
 					break;
+			case 4: 
+					garf.criacaoPontos(n,m);
+					//garf.printArrayPontos();
+					garf.nnf();
+					garf.printArrayPontos();
+
+					garf.exchange();
+					garf.printArrayPontos();
+					
+					//garf.printArrayMatriz();
+
 		}
 
 
