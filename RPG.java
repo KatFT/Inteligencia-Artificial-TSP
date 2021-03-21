@@ -185,56 +185,27 @@ public class RPG{
 		int m= ler.nextInt();
 		Grafo garf= new Grafo(n); //criamos o nosso grafo de pontos de tamanho n
 
-		System.out.println("Escolha o exercicio:");
-		System.out.println("1-Gerar aleatoriamentende pontos no plano com coordenadas inteiras, de −m a m, para n e m dados.");
-		System.out.println("2-Gerar uma permutação qualquer dos pontos.");
-		System.out.println("3-Heurıstica'nearest-neighbour first'");
-		System.out.println("4-Determinar vizinhaça obtida por 2-exchange");
+		garf.criacaoPontos(n,m); //Gerar aleatoriamentende pontos no plano com coordenadas inteiras, de −m a m, para n e m dados.
+		System.out.print("Array de pontos original:");
+		garf.printArrayPontos();
+
+		System.out.println("Escolha uma das seguintes alternativas para criar ligações:");
+		System.out.println("1-Gerar uma permutação qualquer dos pontos.");
+		System.out.println("2-Heurıstica'nearest-neighbour first'");
 		int ex= ler.nextInt();
 		switch(ex){
-			case 1: garf.criacaoPontos(n,m);
-					garf.printArrayPontos();
-					break;
-			
-			case 2: garf.criacaoPontos(n,m);
-					garf.permutation();
-					garf.printArrayMatriz();
+			case 1: garf.permutation();
 					garf.printArrayPontos();
 				    break;
-			case 3: garf.criacaoPontos(n,m);
-					garf.nnf();
-					garf.printArrayMatriz();
+			case 2: garf.nnf();
+					garf.printArrayPontos();
 					break;
-			case 4: 
-					garf.criacaoPontos(n,m);
-					//garf.printArrayPontos();
-					garf.nnf();
-					garf.printArrayPontos();
-
-					garf.exchange();
-					garf.printArrayPontos();
-					
-					//garf.printArrayMatriz();
-
 		}
-
-
-
-		/*
-		//cria as coordenadas aleatorias
-		garf.criacaoPontos(n,m);
-		
-		//imprime os nossos pontos
-		System.out.println("Print dos pontos por ordem:");
-		garf.printArrayPontos();
-		System.out.println("------------------");
-		System.out.println("Print dos pontos permutados:");
-		//permutaçao dos pontos
-		//garf.permutation();
-		//System.out.println("------------------");
-		garf.nnf();
-		garf.printArrayMatriz();
-		*/
-
+		System.out.println("1-Determinar vizinhaça obtida por 2-exchange");
+		ex= ler.nextInt();
+		if(ex==1){
+			garf.exchange();
+			garf.printArrayPontos();
+		}
 	}
 }
