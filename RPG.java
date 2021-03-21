@@ -104,7 +104,7 @@ class Grafo{
 
 		adj[this.tamanho-1][0]=adj[0][this.tamanho-1];
 
-		System.out.println();
+		//System.out.println();
 
 	}
 
@@ -154,8 +154,6 @@ class Grafo{
 	}
 
 	void exchange(){
-		printArrayPontos();
-
 		for(int i=1;i<this.tamanho;i++){
 			for(int j=1;j<this.tamanho;j++){
 				if(j!=(i-1) && j!=i && (j-1)!=i && (j-1)!=(i-1)){
@@ -179,33 +177,68 @@ class Grafo{
 public class RPG{
 	public static void main(String[] args){
 		Scanner ler= new Scanner(System.in);
-		System.out.println("Quantidade de pontos no plano:");
+		System.out.println("Trabalho 1- IA");
+		System.out.print("Quantidade de pontos no plano: ");
 		int n= ler.nextInt();
-		System.out.println("Insira o range desejado:");
+		System.out.print("Insira o range desejado: ");
 		int m= ler.nextInt();
-		Grafo garf= new Grafo(n); //criamos o nosso grafo de pontos de tamanho n
 
+		Grafo garf= new Grafo(n); //criamos o nosso grafo de pontos de tamanho n
 		garf.criacaoPontos(n,m); //Gerar aleatoriamentende pontos no plano com coordenadas inteiras, de −m a m, para n e m dados.
-		System.out.print("Array de pontos original:");
-		garf.printArrayPontos();
+
+
+		
+		System.out.println("_____________________________________________________________________________________");
 
 		System.out.println("Escolha uma das seguintes alternativas para criar ligações:");
 		System.out.println("1-Gerar uma permutação qualquer dos pontos.");
-		System.out.println("2-Heurıstica'nearest-neighbour first'");
+		System.out.println("2-Heuristica 'nearest-neighbour first'");
 		int ex= ler.nextInt();
+
+
+
+		System.out.print("      Array de Original: ");
+		garf.printArrayPontos();
+
 		switch(ex){
-			case 1: garf.permutation();
+			case 1: System.out.print("   Permutação de pontos: ");
+					garf.permutation();
 					garf.printArrayPontos();
 				    break;
-			case 2: garf.nnf();
+			case 2: System.out.print("Nearest-neighbour first: ");
+					garf.nnf();
 					garf.printArrayPontos();
 					break;
 		}
-		System.out.println("1-Determinar vizinhaça obtida por 2-exchange");
-		ex= ler.nextInt();
-		if(ex==1){
-			garf.exchange();
-			garf.printArrayPontos();
-		}
+		System.out.println("_____________________________________________________________________________________");
+		System.out.print("\nVizinhaça obtida por 2-exchange:  ");
+		garf.exchange();
+		garf.printArrayPontos();
+
+		System.out.println("_____________________________________________________________________________________");
+		System.out.println("Escolha uma das seguintes alternativas para escolher o candidato na vizinhança “2-exchange”:");
+		System.out.println("1-Minimo Perímetro - 'best-improvement first'");
+		System.out.println("2-Primeiro candidato nessa vizinhança - 'first-improvement'");
+		System.out.println("3-Menos Conflitos de arestas - menos cruzamentos de arestas");
+		System.out.println("4-Qualquer candidato nessa vizinhaça");
+		/*ex= ler.nextInt();
+		switch(ex){
+			case 1: System.out.print("       Minimo Perímetro: ");
+
+					garf.printArrayPontos();
+				    break;
+			case 2: 
+								
+					garf.printArrayPontos();
+					break;
+			case 3: 
+								
+					garf.printArrayPontos();
+					break;
+			case 4: 
+								
+					garf.printArrayPontos();
+					break;
+		}*/
 	}
 }
