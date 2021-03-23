@@ -153,23 +153,65 @@ class Grafo{
 	    return (0 < lambda && lambda < 1) && (0 < gamma && gamma < 1);
 	}
 
-	void exchange(){
+	//calcula o perimetro do nosso poligono
+	double perimetro(){
+		double soma=0;
 		for(int i=1;i<this.tamanho;i++){
+			soma+=arrayC[i-1].distanceSq(arrayC[i]);
+		}
+		soma+=arrayC[0].distanceSq(arrayC[this.tamanho-1]);
+		//System.out.println("SOMA: "+soma);
+		return soma;
+	}
+
+	void comparar(){
+		double soma=perimetro();
+		double min=0;
+		do{
+		permutation();
+		min=perimetro();
+		}while(min>soma);
+		System.out.println("Resultado final: "+min);
+
+	}
+
+	void exchange(){
+		int a=0;
+		int min=0;
+		for(int i=1;i<this.tamanho;i++){
+
 			for(int j=1;j<this.tamanho;j++){
-				if(j!=(i-1) && j!=i && (j-1)!=i && (j-1)!=(i-1)){
+				if(j-1==this.tamanho){
+					 a=0;
+				}
+				else a=j-1;
+				if(j!=(i-1) && j!=i && a!=i && a!=(i-1)){
+
 					//se houver interseção, então vai haver a troca de segmentos
-					if(intersecao(arrayC[i],arrayC[i-1],arrayC[j],arrayC[j-1])){
+					if(intersecao(arrayC[i],arrayC[i-1],arrayC[j],arrayC[a])){
+						double d1= arrayC[i].distanceSq(arrayC[j]);
+						double d2= arrayC[i-1].distanceSq(arrayC[a]);
+						if(d1<d2)
+							min=j;
+						else min=a;
+						//System.out.println(d1+","+ j+"/"+d2+","+a);
+
 						Point2D temp= arrayC[i];
-						arrayC[i] = arrayC[j-1];
-						arrayC[j-1]=temp;
+						arrayC[i] = arrayC[min];
+						arrayC[min]=temp;
 						System.out.print("("+(int) arrayC[i].getX()+","+(int) arrayC[i].getY()+")");
-						System.out.println(" -> ("+(int) arrayC[j-1].getX()+","+(int) arrayC[j-1].getY()+")");
+						System.out.println(" -> ("+(int) arrayC[min].getX()+","+(int) arrayC[min].getY()+")");
+						
 					}
 
 				}
 			}
 		}
+
 	}
+
+
+
 }
 
 
@@ -224,13 +266,13 @@ public class RPG{
 		System.out.println("2-Primeiro candidato nessa vizinhança - 'first-improvement'");
 		System.out.println("3-Menos Conflitos de arestas - menos cruzamentos de arestas");
 		System.out.println("4-Qualquer candidato nessa vizinhaça");
-		/*ex= ler.nextInt();
+		ex= ler.nextInt();
 		switch(ex){
 			case 1: System.out.print("       Minimo Perímetro: ");
-
+					garf.comparar();
 					garf.printArrayPontos();
 				    break;
-			case 2: 
+			/*case 2: 
 								
 					garf.printArrayPontos();
 					break;
@@ -241,7 +283,7 @@ public class RPG{
 			case 4: 
 								
 					garf.printArrayPontos();
-					break;
-		}*/
+					break;*/
+		}
 	}
 }
