@@ -8,7 +8,6 @@ import java.util.List;
 
 class Grafo{
 	int tamanho; // numero de nos no grafo
-	boolean adj[][]; // matriz de adjacencias
 	boolean visitados[]; //matriz q verifica visitados
 	Point2D arrayC[]; //array aonde vao ficar as coordenadas
 	int count;
@@ -17,11 +16,10 @@ class Grafo{
 		this.count=0;
 		this.tamanho=0;
 		this.arrayC = new Point2D[tamanho];
-		this.adj= new boolean[tamanho][tamanho];
 		this.visitados= new boolean[tamanho];
 	}
 
-	//funçao geradora de pontos (Random)
+	//Ex1-Funçao geradora de pontos (Random)
 	void criacaoPontos(int n,int m){
 		double x,y;
 		int i=0;
@@ -37,9 +35,9 @@ class Grafo{
 		}
 	}
 
+	//Ex1-Verificação se os pontos já existem
 	boolean verificarPontos(double x, double y){
-		if(this.tamanho==0)
-			return false;
+		if(this.tamanho==0) return false;
 		for(int i=0;i<this.tamanho;i++){
 			if(x==arrayC[i].getX() && y==arrayC[i].getY())
 				return true;
@@ -47,49 +45,22 @@ class Grafo{
 		return false;
 	}
 
+	//Imprime os pontos do array
 	void printArrayPontos(){
 		for(int i=0;i<this.tamanho;i++){
 			System.out.print("("+(int)arrayC[i].getX() + ","+(int)arrayC[i].getY()+")");
 		}
 		System.out.println();
 	}
-	void printArrayMatriz(){
-		for(int i=0;i<this.tamanho;i++){
-			for(int j=0;j<this.tamanho;j++){
-				if(this.adj[i][j])
-					System.out.print(" X ");
-				else	
-				System.out.print(" O ");
-			}
-			System.out.println();
-		}
-	}
 
+	//Limpa o array de pontos
 	void clear(){
 		for(int i=0; i<this.tamanho;i++){
 			this.visitados[i]=false;
-			for(int j=0;j<this.tamanho;j++){
-				this.adj[i][j]=false;
-			}
 		}
 	}
-	//este funciona porem pode criar ciclos dentro do grafo
-	/*void permutation(){
-		int x;
-		for(int i=0;i<this.tamanho;i++){
-			Random number= new Random();
-			do{
-				x= number.nextInt(this.tamanho);
-			}while(x==i || this.visitados[x]);
-			adj[i][x]=adj[x][i]=true;
-			visitados[x]=true;
-			System.out.print("("+i+","+x+")");
-			//System.out.print("("+(int) arrayC[x].getX()+","+(int) arrayC[x].getY()+")");
-			//System.out.println(" -> ("+(int) arrayC[i].getX()+","+(int) arrayC[i].getY()+")");
-		}
-		System.out.println();
-	}*/
 
+	//Ex2.1  Permutação de pontos
 	void permutation(){
 		Random number= new Random();
 		for(int i=1;i<this.tamanho;i++){
@@ -97,17 +68,7 @@ class Grafo{
 			Point2D tmp= arrayC[swap];
 			arrayC[swap]=arrayC[i];
 			arrayC[i]=tmp;
-			adj[i][i-1]=adj[i-1][i]=true;
-			//System.out.print("("+i+","+(i-1)+")");
-			//System.out.print("("+(int) arrayC[i-1].getX()+","+(int) arrayC[i-1].getY()+")");
-			//System.out.println(" -> ("+(int) arrayC[i].getX()+","+(int) arrayC[i].getY()+")");
 		}
-		//System.out.print("("+0+","+(this.tamanho-1)+")");
-
-		adj[this.tamanho-1][0]=adj[0][this.tamanho-1];
-
-		//System.out.println();
-
 	}
 
 
@@ -138,11 +99,7 @@ class Grafo{
 				arrayC[indicemin]=arrayC[j];
 				arrayC[j]=a;
 			}
-
-			adj[j][j-1]=adj[j-1][j]=true;
-
 		}
-		adj[0][this.tamanho-1]=adj[this.tamanho-1][0]=true;
 	}
 
 	//verifica se os segmentos se itersetam
@@ -174,7 +131,7 @@ class Grafo{
 		do{
 		permutation();
 		min=perimetro();
-		}while(this.count>min);
+		}while(soma>min);
 		System.out.println("Resultado final: "+min);
 
 	}
@@ -199,19 +156,11 @@ class Grafo{
 
 					//se houver interseção, então vai haver a troca de segmentos
 					if(intersecao(arrayC[i],arrayC[i-1],arrayC[b],arrayC[a])){
-						this.count++;
-						double d1= arrayC[i].distanceSq(arrayC[b]);
-						double d2= arrayC[i-1].distanceSq(arrayC[a]);
-						if(d1<d2)
-							min=b;
-						else min=a;
-						//System.out.println(d1+","+ j+"/"+d2+","+a);
-
 						Point2D temp= arrayC[i];
-						arrayC[i] = arrayC[min]; //
-						arrayC[min]=temp;
+						arrayC[i] = arrayC[a]; //
+						arrayC[a]=temp;
 						System.out.print("("+(int) arrayC[i].getX()+","+(int) arrayC[i].getY()+")");
-						System.out.println(" -> ("+(int) arrayC[min].getX()+","+(int) arrayC[min].getY()+")");
+						System.out.println(" -> ("+(int) arrayC[a].getX()+","+(int) arrayC[a].getY()+")");
 						
 					}
 
@@ -267,35 +216,90 @@ class Grafo{
 }
 
 
-
-public class RPG{
+public class RPG{  
 	public static void main(String[] args){
 		Scanner ler= new Scanner(System.in);
-		System.out.println("Trabalho 1- IA");
+		Grafo garf=new Grafo(0);
+		int opcao=0;
+		boolean inicio=false;
+
+		do{
+			clearScreen();
+			MenuExercicios();
+			opcao=ler.nextInt();
+			clearScreen();
+			if(opcao!=1 && inicio==false){
+				inicio=true;
+				System.out.println("Para fazer o exercicio, temos que criar o array de pontos!\n");
+				garf=Ex1(garf);
+			}
+
+			switch(opcao){
+				case 1: garf= Ex1(garf);
+						inicio=true;
+						break;
+				case 2: garf=Ex2(garf);
+						break;
+				case 3: garf=Ex3(garf);
+						break;
+				case 4: garf=Ex4(garf);
+						break;
+				case 5: 
+						break;
+				case 6: 
+						break;
+			}
+			System.out.print("\n\n0(Sair) / Outro Número (Continuar)   ");
+			opcao=ler.nextInt();
+		}while(opcao!=0);
+	}
+
+	public static void clearScreen() {  
+		System.out.print("\033[H\033[2J");  
+		System.out.flush();  
+	}
+
+	public static void MenuExercicios(){
+		System.out.println("Trabalho 1- IA\n");
+		System.out.println("1 - Gerar aleatoriamente pontos no plano");
+		System.out.println("2 - Determinar um candidato a solução");
+		System.out.println("3 - Determinar a vizinhança obtida por (2-exchange)");
+		System.out.println("4 - Aplicar melhoramento iterativo (hill climbing)");
+		System.out.println("5 - Aplicar simulated annealing");
+		System.out.println("6 - Aplicar metaheurística ACO (ant colony optimization)");
+		System.out.println("Escolha o exercicio:");
+	}
+	
+	public static Grafo Ex1(Grafo garf){
+		Scanner ler= new Scanner(System.in);
+		System.out.println("Ex1:\n");
 		System.out.print("Quantidade de pontos no plano: ");
 		int n= ler.nextInt();
+
 		System.out.print("Insira o range desejado: ");
 		int m= ler.nextInt();
+		garf.clear();
+		garf= new Grafo(n); 
+		garf.criacaoPontos(n,m);
 
-		Grafo garf= new Grafo(n); //criamos o nosso grafo de pontos de tamanho n
-		garf.criacaoPontos(n,m); //Gerar aleatoriamentende pontos no plano com coordenadas inteiras, de −m a m, para n e m dados.
+		System.out.print("Novo Array de pontos: ");
+		garf.printArrayPontos();
+		return garf;
+	}
 
-
-		
-		System.out.println("_____________________________________________________________________________________");
-
+	public static Grafo Ex2(Grafo garf){
+		Scanner ler= new Scanner(System.in);
+		int opcao=0;
+		System.out.println("\n Ex2:\n ");
 		System.out.println("Escolha uma das seguintes alternativas para criar ligações:");
 		System.out.println("1-Gerar uma permutação qualquer dos pontos.");
 		System.out.println("2-Heuristica 'nearest-neighbour first'");
-		int ex= ler.nextInt();
+		opcao=ler.nextInt();
 
-
-		System.out.print("Ex1: ");
 		System.out.print("      Array de Original: ");
 		garf.printArrayPontos();
 
-		System.out.print("Ex2: ");
-		switch(ex){
+		switch(opcao){
 			case 1: System.out.print("   Permutação de pontos: ");
 					garf.permutation();
 					garf.printArrayPontos();
@@ -305,21 +309,29 @@ public class RPG{
 					garf.printArrayPontos();
 					break;
 		}
-		System.out.println("_____________________________________________________________________________________");
-		System.out.println("Ex3: ");
-		System.out.print("Vizinhaça obtida por 2-exchange:  ");
+		return garf;
+	}
+
+	public static Grafo Ex3(Grafo garf){
+		System.out.println("Ex3:\n");
+		System.out.print("       Array de Original: ");
+		garf.printArrayPontos();
+		System.out.print("    Vizinhaça 2-exchange:  ");
 		garf.exchange();
 		garf.printArrayPontos();
+		return garf;
+	}
 
-		System.out.println("\n_____________________________________________________________________________________");
-		System.out.println("Ex4: ");
+	public static Grafo Ex4(Grafo garf){
+		Scanner ler= new Scanner(System.in);
+		System.out.println("Ex4:\n");
 		System.out.println("Escolha uma das seguintes alternativas para escolher o candidato na vizinhança “2-exchange”:");
 		System.out.println("1-Minimo Perímetro - 'best-improvement first'");
 		System.out.println("2-Primeiro candidato nessa vizinhança - 'first-improvement'");
 		System.out.println("3-Menos Conflitos de arestas - menos cruzamentos de arestas");
 		System.out.println("4-Qualquer candidato nessa vizinhaça");
-		ex= ler.nextInt();
-		switch(ex){
+		int opcao= ler.nextInt();
+		switch(opcao){
 			case 1: 
 					garf.printArrayPontos();
 					System.out.println("       Minimo Perímetro: ");
@@ -339,5 +351,6 @@ public class RPG{
 					garf.printArrayPontos();
 					break;*/
 		}
+		return garf;
 	}
 }
