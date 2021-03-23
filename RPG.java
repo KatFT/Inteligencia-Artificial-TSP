@@ -139,10 +139,8 @@ class Grafo{
 	void exchange(){
 		this.count=0;
 		int a=0;
-		int min=0;
 		int b=0;
 		for(int i=1;i<this.tamanho;i++){
-
 			for(int j=1;j<=this.tamanho;j++){
 				if(j==this.tamanho){
 					 a=0;
@@ -153,7 +151,6 @@ class Grafo{
 				 b=j;
 				}
 				if(b!=(i-1) && b!=i && a!=i && a!=(i-1)){
-
 					//se houver interseção, então vai haver a troca de segmentos
 					if(intersecao(arrayC[i],arrayC[i-1],arrayC[b],arrayC[a])){
 						Point2D temp= arrayC[i];
@@ -161,13 +158,10 @@ class Grafo{
 						arrayC[a]=temp;
 						System.out.print("("+(int) arrayC[i].getX()+","+(int) arrayC[i].getY()+")");
 						System.out.println(" -> ("+(int) arrayC[a].getX()+","+(int) arrayC[a].getY()+")");
-						
 					}
-
 				}
 			}
 		}
-
 	}
 
 
