@@ -11,8 +11,10 @@ class Grafo{
 	boolean adj[][]; // matriz de adjacencias
 	boolean visitados[]; //matriz q verifica visitados
 	Point2D arrayC[]; //array aonde vao ficar as coordenadas
+	int count;
 	
 	Grafo(int tamanho){
+		this.count=0;
 		this.tamanho=0;
 		this.arrayC = new Point2D[tamanho];
 		this.adj= new boolean[tamanho][tamanho];
@@ -160,44 +162,53 @@ class Grafo{
 			soma+=arrayC[i-1].distanceSq(arrayC[i]);
 		}
 		soma+=arrayC[0].distanceSq(arrayC[this.tamanho-1]);
-		//System.out.println("SOMA: "+soma);
+		System.out.println("SOMA: "+soma);
 		return soma;
 	}
 
 	void comparar(){
+		hillClimbing();
+		exchange();
 		double soma=perimetro();
 		double min=0;
 		do{
 		permutation();
 		min=perimetro();
-		}while(min>soma);
+		}while(this.count>min);
 		System.out.println("Resultado final: "+min);
 
 	}
 
 	void exchange(){
+		this.count=0;
 		int a=0;
 		int min=0;
+		int b=0;
 		for(int i=1;i<this.tamanho;i++){
 
-			for(int j=1;j<this.tamanho;j++){
-				if(j-1==this.tamanho){
+			for(int j=1;j<=this.tamanho;j++){
+				if(j==this.tamanho){
 					 a=0;
+					 b=this.tamanho-1;
 				}
-				else a=j-1;
-				if(j!=(i-1) && j!=i && a!=i && a!=(i-1)){
+				else{
+				 a=j-1;
+				 b=j;
+				}
+				if(b!=(i-1) && b!=i && a!=i && a!=(i-1)){
 
 					//se houver interseção, então vai haver a troca de segmentos
-					if(intersecao(arrayC[i],arrayC[i-1],arrayC[j],arrayC[a])){
-						double d1= arrayC[i].distanceSq(arrayC[j]);
+					if(intersecao(arrayC[i],arrayC[i-1],arrayC[b],arrayC[a])){
+						this.count++;
+						double d1= arrayC[i].distanceSq(arrayC[b]);
 						double d2= arrayC[i-1].distanceSq(arrayC[a]);
 						if(d1<d2)
-							min=j;
+							min=b;
 						else min=a;
 						//System.out.println(d1+","+ j+"/"+d2+","+a);
 
 						Point2D temp= arrayC[i];
-						arrayC[i] = arrayC[min];
+						arrayC[i] = arrayC[min]; //
 						arrayC[min]=temp;
 						System.out.print("("+(int) arrayC[i].getX()+","+(int) arrayC[i].getY()+")");
 						System.out.println(" -> ("+(int) arrayC[min].getX()+","+(int) arrayC[min].getY()+")");
@@ -206,6 +217,47 @@ class Grafo{
 
 				}
 			}
+		}
+
+	}
+
+
+	void hillClimbing(){
+		int index=0;
+
+		double min=Double.MAX_VALUE;
+		for(int i=1;i<this.tamanho;i++){
+			Point2D current= arrayC[i-1];
+			for(int j=1;j<this.tamanho;j++){
+
+				double d1=current.distanceSq(arrayC[j]);
+				if(d1<min){
+					min=d1;
+					index=j;
+				}
+			}
+			Point2D temp= arrayC[i];
+			arrayC[i] = arrayC[index];
+			arrayC[index]=temp;
+		}
+
+	}
+
+	void hillClimbinga(){
+		int index=0;
+		double min=Double.MAX_VALUE;
+		for(int i=1;i<this.tamanho;i++){
+			Point2D current= arrayC[i-1];
+			for(int j=1;j<this.tamanho;j++){
+				double d1=current.distanceSq(arrayC[j]);
+				if(d1<min){
+					min=d1;
+					index=j;
+				}
+			}
+			Point2D temp= arrayC[i];
+			arrayC[i] = arrayC[index];
+			arrayC[index]=temp;
 		}
 
 	}
@@ -268,7 +320,9 @@ public class RPG{
 		System.out.println("4-Qualquer candidato nessa vizinhaça");
 		ex= ler.nextInt();
 		switch(ex){
-			case 1: System.out.print("       Minimo Perímetro: ");
+			case 1: 
+					garf.printArrayPontos();
+					System.out.println("       Minimo Perímetro: ");
 					garf.comparar();
 					garf.printArrayPontos();
 				    break;
