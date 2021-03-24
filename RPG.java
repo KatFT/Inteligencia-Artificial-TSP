@@ -9,8 +9,8 @@ import java.util.LinkedList;
 class Reta{
 	public Point2D[] x;
 
-	Reta(Point2D[] x){
-		this.x=x;
+	Reta(Point2D[] a){
+		x=a.clone();
 	}
 }
 
@@ -103,20 +103,22 @@ class Grafo{
 	}
 
 	//Reverte o restante array depois do exchange
-	void reverse(int i,int a){
+	Point2D[] reverse(int i,int a, Point2D[] novoarray){
 		for(int j=i;j<a;j++){
-			Point2D temp= this.arrayC[j];
-			this.arrayC[j]=this.arrayC[a];
-			this.arrayC[a]=temp;
+			Point2D temp= novoarray[j];
+			novoarray[j]=novoarray[a];
+			novoarray[a]=temp;
 			a--;
 		}
+		return novoarray;
 	}
 
 	//Ex3 Determinar a vizinhança obtida por (2-exchange)
 	void exchange(){
+		Point2D[] novoarray;
 		int a=0,b=0;
 		for(int i=1;i<this.tamanho;i++){
-			for(int j=1;j<=this.tamanho;j++){
+			for(int j=i;j<=this.tamanho;j++){
 				if(j==this.tamanho){
 					 a=0;
 					 b=this.tamanho-1;
@@ -132,10 +134,12 @@ class Grafo{
 						System.out.print("("+(int)arrayC[i].getX()+","+(int)arrayC[i].getY()+")");
 						System.out.println("->("+(int) arrayC[a].getX()+","+(int) arrayC[a].getY()+")");
 	
-						if(a<i)	reverse(a,i);
-						else reverse(i,a);
+						if(a<i)	
+							novoarray=reverse(a,i,arrayC.clone());
+						else 
+							novoarray=reverse(i,a,arrayC.clone());
 
-						lista.addLast(new Reta(arrayC));
+						lista.addLast(new Reta(novoarray));
 						//System.out.print("Array"+ lista.size()+": ");
 						//printArrayPontos();
 						printLista();
@@ -143,6 +147,7 @@ class Grafo{
 				}
 			}
 		}
+		
 	}
 
 	//Calcula o perimetro do poligono
@@ -217,7 +222,10 @@ class Grafo{
 	}
 	void printLista(){
 		for(int i=0;i<this.lista.size();i++){
-			System.out.print(this.lista.get(i).x[i]);
+			for(int j=0; j<this.tamanho;j++)
+				System.out.print("("+(int)this.lista.get(i).x[j].getX()+","+(int) this.lista.get(i).x[j].getY()+")  ");
+
+			System.out.println();
 		}
 		System.out.println();
 	}
@@ -327,7 +335,7 @@ public class RPG{
 		garf.printArrayPontos();
 		System.out.println("    Vizinhaça 2-exchange:  ");
 		garf.exchange();
-		garf.printArrayPontos();
+		//garf.printArrayPontos();
 		return garf;
 	}
 
