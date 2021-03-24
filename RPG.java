@@ -4,13 +4,26 @@ import java.util.Random; //para criar pontos randoms
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.LinkedList;
+
+
+
+
+class Reta{
+	public Point2D[] x;
+
+	Reta(Point2D[] x){
+		this.x=x;
+	}
+}
 
 
 class Grafo{
 	int tamanho; // numero de nos no grafo
-	boolean visitados[]; //matriz q verifica visitados
-	Point2D arrayC[]; //array aonde vao ficar as coordenadas
+	boolean[] visitados; //matriz q verifica visitados
+	Point2D[] arrayC; //array aonde vao ficar as coordenadas
 	int count;
+	LinkedList<Reta> lista= new LinkedList<>();  
 	
 	Grafo(int tamanho){
 		this.count=0;
@@ -136,8 +149,25 @@ class Grafo{
 
 	}
 
+	void reverse(int i,int a){
+		int x=a-1;
+		for(int j=i;j<a/2;j++){
+			Point2D temp= this.arrayC[j];
+			this.arrayC[j]=this.arrayC[x-j];
+			this.arrayC[x-j]=temp;
+			
+			System.out.println("("+j+","+(x+1)+")");
+
+		}
+		System.out.println("Este e o reverse");
+		System.out.println("--------");
+
+		printArrayPontos();
+	}
+
 	void exchange(){
 		this.count=0;
+
 		int a=0;
 		int b=0;
 		for(int i=1;i<this.tamanho;i++){
@@ -153,11 +183,21 @@ class Grafo{
 				if(b!=(i-1) && b!=i && a!=i && a!=(i-1)){
 					//se houver interseção, então vai haver a troca de segmentos
 					if(intersecao(arrayC[i],arrayC[i-1],arrayC[b],arrayC[a])){
-						Point2D temp= arrayC[i];
+						/*Point2D temp= arrayC[i];
 						arrayC[i] = arrayC[a]; //
-						arrayC[a]=temp;
+						arrayC[a]=temp;*/
 						System.out.print("("+(int) arrayC[i].getX()+","+(int) arrayC[i].getY()+")");
 						System.out.println(" -> ("+(int) arrayC[a].getX()+","+(int) arrayC[a].getY()+")");
+						
+						if(a<i)
+							reverse(a,i);
+						else reverse(i,a);
+						
+
+
+						lista.addLast(new Reta(arrayC));
+
+						
 					}
 				}
 			}
