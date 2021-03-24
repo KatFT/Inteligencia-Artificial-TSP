@@ -6,9 +6,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.LinkedList;
 
-
-
-
 class Reta{
 	public Point2D[] x;
 
@@ -17,19 +14,14 @@ class Reta{
 	}
 }
 
-
 class Grafo{
 	int tamanho; // numero de nos no grafo
-	boolean[] visitados; //matriz q verifica visitados
 	Point2D[] arrayC; //array aonde vao ficar as coordenadas
-	int count;
 	LinkedList<Reta> lista= new LinkedList<>();  
 	
 	Grafo(int tamanho){
-		this.count=0;
 		this.tamanho=0;
 		this.arrayC = new Point2D[tamanho];
-		this.visitados= new boolean[tamanho];
 	}
 
 	//Ex1-Funçao geradora de pontos (Random)
@@ -58,21 +50,6 @@ class Grafo{
 		return false;
 	}
 
-	//Imprime os pontos do array
-	void printArrayPontos(){
-		for(int i=0;i<this.tamanho;i++){
-			System.out.print("("+(int)arrayC[i].getX() + ","+(int)arrayC[i].getY()+")");
-		}
-		System.out.println();
-	}
-
-	//Limpa o array de pontos
-	void clear(){
-		for(int i=0; i<this.tamanho;i++){
-			this.visitados[i]=false;
-		}
-	}
-
 	//Ex2.1  Permutação de pontos
 	void permutation(){
 		Random number= new Random();
@@ -84,7 +61,7 @@ class Grafo{
 		}
 	}
 
-
+	//Ex2.2 Nearest-neighbour first
 	void nnf(){
 		int x;
 		Random  number= new Random();
@@ -115,7 +92,7 @@ class Grafo{
 		}
 	}
 
-	//verifica se os segmentos se itersetam
+	//Verifica se os segmentos se itersetam
 	boolean intersecao(Point2D a, Point2D b, Point2D c, Point2D d) {
 	    double det = (b.getX() - a.getX()) * (d.getY() - c.getY()) - (d.getX() - c.getX()) * (b.getY() - a.getY());
 	    if (det == 0)
@@ -125,7 +102,50 @@ class Grafo{
 	    return (0 < lambda && lambda < 1) && (0 < gamma && gamma < 1);
 	}
 
-	//calcula o perimetro do nosso poligono
+	//Reverte o restante array depois do exchange
+	void reverse(int i,int a){
+		for(int j=i;j<a;j++){
+			Point2D temp= this.arrayC[j];
+			this.arrayC[j]=this.arrayC[a];
+			this.arrayC[a]=temp;
+			a--;
+		}
+	}
+
+	//Ex3 Determinar a vizinhança obtida por (2-exchange)
+	void exchange(){
+		int a=0,b=0;
+		for(int i=1;i<this.tamanho;i++){
+			for(int j=1;j<=this.tamanho;j++){
+				if(j==this.tamanho){
+					 a=0;
+					 b=this.tamanho-1;
+				}
+				else{
+				 a=j-1;
+				 b=j;
+				}
+				if(b!=(i-1) && b!=i && a!=i && a!=(i-1)){
+					//se houver interseção, então vai haver a troca de segmentos
+					if(intersecao(arrayC[i],arrayC[i-1],arrayC[b],arrayC[a])){
+						//Imprime as trocas
+						System.out.print("("+(int)arrayC[i].getX()+","+(int)arrayC[i].getY()+")");
+						System.out.println("->("+(int) arrayC[a].getX()+","+(int) arrayC[a].getY()+")");
+	
+						if(a<i)	reverse(a,i);
+						else reverse(i,a);
+
+						lista.addLast(new Reta(arrayC));
+						//System.out.print("Array"+ lista.size()+": ");
+						//printArrayPontos();
+						printLista();
+					}
+				}
+			}
+		}
+	}
+
+	//Calcula o perimetro do poligono
 	double perimetro(){
 		double soma=0;
 		for(int i=1;i<this.tamanho;i++){
@@ -146,66 +166,8 @@ class Grafo{
 		min=perimetro();
 		}while(soma>min);
 		System.out.println("Resultado final: "+min);
-
 	}
-
-	void reverse(int i,int a){
-		
-		for(int j=i;j<a;j++){
-			Point2D temp= this.arrayC[j];
-			this.arrayC[j]=this.arrayC[a];
-			this.arrayC[a]=temp;
-			a--;
-
-			
-			System.out.println("("+j+","+(a)+")");
-
-		}
-		System.out.println("Este e o reverse");
-		System.out.println("--------");
-
-		printArrayPontos();
-	}
-
-	void exchange(){
-		this.count=0;
-
-		int a=0;
-		int b=0;
-		for(int i=1;i<this.tamanho;i++){
-			for(int j=1;j<=this.tamanho;j++){
-				if(j==this.tamanho){
-					 a=0;
-					 b=this.tamanho-1;
-				}
-				else{
-				 a=j-1;
-				 b=j;
-				}
-				if(b!=(i-1) && b!=i && a!=i && a!=(i-1)){
-					//se houver interseção, então vai haver a troca de segmentos
-					if(intersecao(arrayC[i],arrayC[i-1],arrayC[b],arrayC[a])){
-						/*Point2D temp= arrayC[i];
-						arrayC[i] = arrayC[a]; //
-						arrayC[a]=temp;*/
-						System.out.print("("+(int) arrayC[i].getX()+","+(int) arrayC[i].getY()+")");
-						System.out.println(" -> ("+(int) arrayC[a].getX()+","+(int) arrayC[a].getY()+")");
-						
-						if(a<i)
-							reverse(a,i);
-						else reverse(i,a);
-						
-
-
-						lista.addLast(new Reta(arrayC));
-
-						
-					}
-				}
-			}
-		}
-	}
-
+	
 
 	void hillClimbing(){
 		int index=0;
@@ -246,7 +208,19 @@ class Grafo{
 		}
 
 	}
-
+	//Imprime os pontos do array
+	void printArrayPontos(){
+		for(int i=0;i<this.tamanho;i++){
+			System.out.print("("+(int)arrayC[i].getX() + ","+(int)arrayC[i].getY()+")");
+		}
+		System.out.println();
+	}
+	void printLista(){
+		for(int i=0;i<this.lista.size();i++){
+			System.out.print(this.lista.get(i).x[i]);
+		}
+		System.out.println();
+	}
 
 
 }
@@ -314,7 +288,6 @@ public class RPG{
 
 		System.out.print("Insira o range desejado: ");
 		int m= ler.nextInt();
-		garf.clear();
 		garf= new Grafo(n); 
 		garf.criacaoPontos(n,m);
 
@@ -352,7 +325,7 @@ public class RPG{
 		System.out.println("Ex3:\n");
 		System.out.print("       Array de Original: ");
 		garf.printArrayPontos();
-		System.out.print("    Vizinhaça 2-exchange:  ");
+		System.out.println("    Vizinhaça 2-exchange:  ");
 		garf.exchange();
 		garf.printArrayPontos();
 		return garf;
