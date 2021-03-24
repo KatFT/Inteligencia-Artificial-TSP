@@ -12,16 +12,24 @@ class Reta{
 	Reta(Point2D[] a){
 		x=a.clone();
 	}
+
+	//pega na nossa reta e transforma-a para um array de pontos
+	Point2D[] toarray(){
+		return x;
+	}
 }
 
 class Grafo{
 	int tamanho; // numero de nos no grafo
 	Point2D[] arrayC; //array aonde vao ficar as coordenadas
+	Point2D[] best_so_far; //usado no hill climbing para determinar o melhor
 	LinkedList<Reta> lista= new LinkedList<>();  
 	
 	Grafo(int tamanho){
 		this.tamanho=0;
 		this.arrayC = new Point2D[tamanho];
+		this.best_so_far= new Point2D[tamanho];
+
 	}
 
 	//Ex1-Funçao geradora de pontos (Random)
@@ -150,69 +158,162 @@ class Grafo{
 		
 	}
 
+//vai ser utilizado para o hill cimbling
+	void hill_exchange(){
+		Point2D[] novoarray;
+		int a=0,b=0;
+		for(int i=1;i<this.tamanho;i++){
+			for(int j=i;j<=this.tamanho;j++){
+				if(j==this.tamanho){
+					 a=0;
+					 b=this.tamanho-1;
+				}
+				else{
+				 a=j-1;
+				 b=j;
+				}
+				if(b!=(i-1) && b!=i && a!=i && a!=(i-1)){
+					//se houver interseção, então vai haver a troca de segmentos
+					if(intersecao(this.best_so_far[i],this.best_so_far[i-1],this.best_so_far[b],this.best_so_far[a])){
+						//Imprime as trocas
+						System.out.print("("+(int)this.best_so_far[i].getX()+","+(int)this.best_so_far[i].getY()+")");
+						System.out.println("->("+(int) this.best_so_far[a].getX()+","+(int) this.best_so_far[a].getY()+")");
+	
+						if(a<i)	
+							novoarray=reverse(a,i,this.best_so_far.clone());
+						else 
+							novoarray=reverse(i,a,this.best_so_far.clone());
+
+						lista.addLast(new Reta(novoarray));
+						//System.out.print("Array"+ lista.size()+": ");
+						//printArrayPontos();
+						printLista();
+					}
+				}
+			}
+		}
+
+	}
+
+	
+	Point2D[] opcao(int op){
+		//Point2D[] teste;
+		switch(op){
+			case 1: //perimetro
+					int i=0;
+					double j=Double.MAX_VALUE;
+					int pos=0; //guarda posiçao
+					for(Reta res : lista){ //para cada posiçao da lista
+						double calc=perimetro(res.toarray());//calculamos o perimetro
+						if(calc<j){//se for menor, troca e muda a posiçao para computar a metrica
+							j=calc;
+							pos=i;//computa a metrica
+						}
+						i++;//senao avança
+					}
+					return lista.remove(pos).toarray(); //depois retiramos na lista para ser avaliado
+
+					/*Point2D[] res= lista.removeFirst().toarray();
+					double min= perimetro(res); 
+					for(int i=1;i<lista.size();i++){
+						double m= perimetro(lista.remove(i).toarray());
+					
+						if(m<min){
+							min=m;
+							res=lista.remove(i).toarray();
+						}
+					}
+					return res;*/
+					
+			case 2: //retiramos o primeiro da lista para ser avaliado
+					return lista.removeFirst().toarray();
+					
+			case 3: //retira o elemento da lista com menos conflitos
+
+					int k=0;
+					double min= Double.MAX_VALUE;
+					int posicao=0;
+					int minimo=0;
+					for(Reta res : lista){
+						Point2D[] b= res.toarray();
+						minimo=inter(b);
+						if(minimo<min){
+							min=minimo;
+							posicao=k;
+						}
+						k++;
+					}
+					return lista.remove(posicao).toarray();
+					
+			case 4: //retiramos um random da lista para ser avaliado
+					Random s= new Random();
+					return lista.remove(s.nextInt(lista.size())).toarray();
+			default: return null;
+					
+		}
+
+	}
+
+	//funçao para saber o nº interseçoes (utilizado no 4 c))
+	int inter(Point2D[] array){
+		int count=0;
+		for(int i=1;i<this.tamanho;i++){
+			for(int j=1;j<this.tamanho;j++){
+				
+				if(intersecao(array[i-1],array[i],array[j-1],array[j]))
+					count++;
+				
+			}
+		}
+		return count;
+	}
+
 	//Calcula o perimetro do poligono
-	double perimetro(){
+	double perimetro(Point2D[] array){
 		double soma=0;
 		for(int i=1;i<this.tamanho;i++){
-			soma+=arrayC[i-1].distanceSq(arrayC[i]);
+			soma+=array[i-1].distanceSq(array[i]);
 		}
-		soma+=arrayC[0].distanceSq(arrayC[this.tamanho-1]);
-		System.out.println("SOMA: "+soma);
+		soma+=array[0].distanceSq(array[this.tamanho-1]);
 		return soma;
 	}
 
-	void comparar(){
-		hillClimbing();
-		exchange();
-		double soma=perimetro();
-		double min=0;
-		do{
-		permutation();
-		min=perimetro();
-		}while(soma>min);
-		System.out.println("Resultado final: "+min);
+	//imprime a solução final
+	void arrayFinal(Point2D[] a,double res){
+		System.out.print("\nArray Solução: ");
+		for(int i=0;i<this.tamanho;i++){
+			System.out.print("("+(int)a[i].getX() + ","+(int)a[i].getY()+")");
+		}
+		System.out.println();
+		System.out.println("Perimetro: "+res);
+		System.out.println();
 	}
+
+	//algoritmo para calcular o array aonde o perimetro e minimo
+	void hillClimbing(int op){
+
+		this.best_so_far=arrayC; //estado inicial
+		hill_exchange();
+		double res=0.0;
+		//imprimir array
+		while(!lista.isEmpty()){
+			System.out.println("Iteraçao Passada");
+
+			Point2D[] candidate= opcao(op); //candidato 
+			double min=perimetro(this.best_so_far);
+			double max=perimetro(candidate);
+			if(max<min){
+				max=min;
+				res=max;
+				best_so_far=candidate;
+				hill_exchange();
+			}	
+			res=min;	
+		}
+		arrayFinal(best_so_far,res);
+	}
+
 	
-
-	void hillClimbing(){
-		int index=0;
-
-		double min=Double.MAX_VALUE;
-		for(int i=1;i<this.tamanho;i++){
-			Point2D current= arrayC[i-1];
-			for(int j=1;j<this.tamanho;j++){
-
-				double d1=current.distanceSq(arrayC[j]);
-				if(d1<min){
-					min=d1;
-					index=j;
-				}
-			}
-			Point2D temp= arrayC[i];
-			arrayC[i] = arrayC[index];
-			arrayC[index]=temp;
-		}
-
-	}
-
-	void hillClimbinga(){
-		int index=0;
-		double min=Double.MAX_VALUE;
-		for(int i=1;i<this.tamanho;i++){
-			Point2D current= arrayC[i-1];
-			for(int j=1;j<this.tamanho;j++){
-				double d1=current.distanceSq(arrayC[j]);
-				if(d1<min){
-					min=d1;
-					index=j;
-				}
-			}
-			Point2D temp= arrayC[i];
-			arrayC[i] = arrayC[index];
-			arrayC[index]=temp;
-		}
-
-	}
 	//Imprime os pontos do array
 	void printArrayPontos(){
 		for(int i=0;i<this.tamanho;i++){
@@ -351,22 +452,26 @@ public class RPG{
 		switch(opcao){
 			case 1: 
 					garf.printArrayPontos();
-					System.out.println("       Minimo Perímetro: ");
-					garf.comparar();
-					garf.printArrayPontos();
+					System.out.println("Minimo Perímetro: ");
+
+					garf.hillClimbing(1);
+					//garf.printArrayPontos();
 				    break;
-			/*case 2: 
-								
+			case 2: 
 					garf.printArrayPontos();
+					garf.hillClimbing(2);			
+					//garf.printArrayPontos();
 					break;
 			case 3: 
 								
 					garf.printArrayPontos();
+					garf.hillClimbing(3);
 					break;
 			case 4: 
 								
 					garf.printArrayPontos();
-					break;*/
+					garf.hillClimbing(4);
+					break;
 		}
 		return garf;
 	}
