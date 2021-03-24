@@ -150,13 +150,15 @@ class Grafo{
 	}
 
 	void reverse(int i,int a){
-		int x=a-1;
-		for(int j=i;j<a/2;j++){
+		
+		for(int j=i;j<a;j++){
 			Point2D temp= this.arrayC[j];
-			this.arrayC[j]=this.arrayC[x-j];
-			this.arrayC[x-j]=temp;
+			this.arrayC[j]=this.arrayC[a];
+			this.arrayC[a]=temp;
+			a--;
+
 			
-			System.out.println("("+j+","+(x+1)+")");
+			System.out.println("("+j+","+(a)+")");
 
 		}
 		System.out.println("Este e o reverse");
