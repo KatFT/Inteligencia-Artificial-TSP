@@ -189,8 +189,8 @@ class Grafo{
 					//se houver interseção, então vai haver a troca de segmentos
 					if(intersecao(this.best_so_far[i],this.best_so_far[i-1],this.best_so_far[b],this.best_so_far[a])){
 						//Imprime as trocas
-						System.out.print("("+(int)this.best_so_far[i].getX()+","+(int)this.best_so_far[i].getY()+")");
-						System.out.println("->("+(int) this.best_so_far[a].getX()+","+(int) this.best_so_far[a].getY()+")");
+						//System.out.print("("+(int)this.best_so_far[i].getX()+","+(int)this.best_so_far[i].getY()+")");
+						//System.out.println("->("+(int) this.best_so_far[a].getX()+","+(int) this.best_so_far[a].getY()+")");
 	
 						if(a<i)	
 							novoarray=reverse(a,i,this.best_so_far.clone());
@@ -200,7 +200,7 @@ class Grafo{
 						lista.addLast(new Reta(novoarray));
 						//System.out.print("Array"+ lista.size()+": ");
 						//printArrayPontos();
-						printLista();
+						//printLista();
 					}
 				}
 			}
@@ -292,11 +292,53 @@ class Grafo{
 				max=min;
 				res=max;
 				best_so_far=candidate;
+				//lista.clear();//limpamos a lista
 				hill_exchange();
-			}	
-			res=min;	
+			}
+			else{	
+
+				res=min;
+				arrayFinal(best_so_far,res);
+				return;
+			}
+
+		}
+		
+	}
+
+	double acceptanceProbability(double min, double max, double temp) {
+        // If the new solution is better, accept it
+        if (max < min) {
+            return 1;
+        }
+        // If the new solution is worse, calculate an acceptance probability
+        return Math.exp((min - max) / temp);
+    }
+
+	void simA(){
+		this.best_so_far= arrayC;
+		double temp= (double)inter(arrayC); //temperatura
+		hill_exchange();
+		double res=0.0;
+		while(!lista.isEmpty() && temp>0){
+			//System.out.println("TEMPERATURA CRLH: "+temp);
+			Point2D[] candidate= opcao(4);
+			double min=perimetro(this.best_so_far);
+			double max=perimetro(candidate);
+			//aceita
+			if(acceptanceProbability(min, max, temp)> Math.random()){
+
+				best_so_far= candidate;
+				res=max;
+				hill_exchange();
+			}
+			res=min;
+			//atualizar a temperatura
+			temp=(double) 0.95*temp;
+
 		}
 		arrayFinal(best_so_far,res);
+
 	}
 
 	//Ex4 Imprime a lista de valores
@@ -346,8 +388,9 @@ public class RPG{
 						break;
 				case 4: garf=Ex4(garf);
 						break;
-				//case 5: 
-					//	break;
+				case 5: 
+						garf=Ex5(garf);
+						break;
 				//case 6: 
 					//	break;
 			}
@@ -367,7 +410,7 @@ public class RPG{
 		System.out.println("2 - Determinar um candidato a solução");
 		System.out.println("3 - Determinar a vizinhança obtida por (2-exchange)");
 		System.out.println("4 - Aplicar melhoramento iterativo (hill climbing)");
-		//System.out.println("5 - Aplicar simulated annealing");
+		System.out.println("5 - Aplicar simulated annealing");
 		//System.out.println("6 - Aplicar metaheurística ACO (ant colony optimization)");
 		System.out.println("Escolha o exercicio:");
 	}
@@ -434,6 +477,7 @@ public class RPG{
 		System.out.println("2-Primeiro candidato nessa vizinhança - 'first-improvement'");
 		System.out.println("3-Menos Conflitos de arestas - menos cruzamentos de arestas");
 		System.out.println("4-Qualquer candidato nessa vizinhaça");
+		
 		int opcao= ler.nextInt();
 		clearScreen();
 		switch(opcao){
@@ -459,6 +503,17 @@ public class RPG{
 					garf.hillClimbing(4);
 					break;
 		}
+		return garf;
+	}
+
+	public static Grafo Ex5(Grafo garf){
+		clearScreen();
+		System.out.println("Ex5:\n");
+		System.out.println("Aplicar simulated annealing. Usar como medida de custo o número de cruzamentos de arestas.");
+		System.out.println("Original:  ");
+		garf.printArrayPontos();
+		garf.simA();
+		//garf.printArrayPontos();
 		return garf;
 	}
 }
