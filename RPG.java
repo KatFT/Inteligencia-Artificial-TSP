@@ -23,12 +23,13 @@ class Grafo{
 	int tamanho; // numero de nos no grafo
 	Point2D[] arrayC; //array aonde vao ficar as coordenadas
 	Point2D[] best_so_far; //usado no hill climbing para determinar o melhor
-	LinkedList<Reta> lista= new LinkedList<>();  
+	LinkedList<Reta> lista;  
 	
 	Grafo(int tamanho){
 		this.tamanho=0;
 		this.arrayC = new Point2D[tamanho];
 		this.best_so_far= new Point2D[tamanho];
+		this.lista= new LinkedList<>();
 
 	}
 
@@ -160,6 +161,7 @@ class Grafo{
 		}
 		return novoarray;
 	}
+	
 
 	//Ex4 Calcula o perimetro do poligono
 	double perimetro(Point2D[] array){
