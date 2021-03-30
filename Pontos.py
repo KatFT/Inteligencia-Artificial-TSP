@@ -1,6 +1,6 @@
+
+"""Agradecemos ao colega Duarte Alves pela ajuda na interface gráfica em python"""
 import matplotlib.pyplot as plt 
-
-
 
 datax = []
 datay = []
