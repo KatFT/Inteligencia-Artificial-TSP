@@ -141,14 +141,80 @@ class Grafo{
 		printLista();
 	}
 	
+	//https://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
+	
+
+	// Given three colinear points p, q, r, the function checks if
+	// point q lies on line segment 'pr'
+	static boolean onSegment(Point2D p, Point2D q, Point2D r)
+	{
+	    if (q.getX() <= Math.max(p.getX(), r.getX()) && q.getX() >= Math.min(p.getX(), r.getX()) &&
+	        q.getY() <= Math.max(p.getY(), r.getY()) && q.getY() >= Math.min(p.getY(), r.getY()))
+	    return true;
+	  
+	    return false;
+	}
+	  
+	// To find orientation of ordered triplet (p, q, r).
+	// The function returns following values
+	// 0 --> p, q and r are colinear
+	// 1 --> Clockwise
+	// 2 --> Counterclockwise
+	static double orientation(Point2D p, Point2D q, Point2D r)
+	{
+	    // See https://www.geeksforgeeks.org/orientation-3-ordered-points/
+	    // for details of below formula.
+	    double val = (q.getY() - p.getY()) * (r.getX() - q.getX()) -
+	            (q.getX() - p.getX()) * (r.getY() - q.getY());
+	  
+	    if (val == 0) return 0; // colinear
+	  
+	    return (val > 0)? 1: 2; // clock or counterclock wise
+	}
+	double produtoVet(Point2D p1, Point2D q1, Point2D p2, Point2D q2){
+		Point2D x= new Point2D.Double(q1.getX()-p1.getX(),q1.getY()-p1.getY());
+		Point2D y= new Point2D.Double(q2.getX()-p2.getX(),q2.getY()-p2.getY());
+		return (x.getX()*y.getX()) + (x.getY()*y.getY());
+	}
+
 	//Ex3 e 4 Verifica se os segmentos se intersetam
-	boolean intersecao(Point2D a, Point2D b, Point2D c, Point2D d) {
-	    double det = (b.getX() - a.getX()) * (d.getY() - c.getY()) - (d.getX() - c.getX()) * (b.getY() - a.getY());
+	boolean intersecao(Point2D p1, Point2D q1, Point2D p2, Point2D q2) {
+	    /*double det = (b.getX() - a.getX()) * (d.getY() - c.getY()) - (d.getX() - c.getX()) * (b.getY() - a.getY());
 	    if (det == 0)
 	        return false; //Lines are parallel
 	    double lambda = ((d.getY() - c.getY()) * (d.getX() - a.getX()) + (c.getX() - d.getX()) * (d.getY() - a.getY())) / det;
 	    double gamma = ((a.getY() - b.getY()) * (d.getX()- a.getX()) + (b.getX() - a.getX()) * (d.getY() - a.getY())) / det;
-	    return (0 < lambda && lambda < 1) && (0 < gamma && gamma < 1);
+	    return (0 < lambda && lambda < 1) && (0 < gamma && gamma < 1);*/
+	     // Find the four orientations needed for general and
+    // special cases
+	    double o1 = orientation(p1, q1, p2);
+	    double o2 = orientation(p1, q1, q2);
+	    double o3 = orientation(p2, q2, p1);
+	    double o4 = orientation(p2, q2, q1);
+	  
+	    if(o1*o2<0 || o3*o4<0) return true;
+
+	    if((o1==0 && o2==0) || (o3==0&&o4==0))
+	    	if(produtoVet(p1,q1,p2,q2)>0) return true;
+
+	    // General case
+	    if (o1 != o2 && o3 != o4)
+	        return true;
+	  
+	    // Special Cases
+	    // p1, q1 and p2 are colinear and p2 lies on segment p1q1
+	    if (o1 == 0 && onSegment(p1, p2, q1)) return true;
+	  
+	    // p1, q1 and q2 are colinear and q2 lies on segment p1q1
+	    if (o2 == 0 && onSegment(p1, q2, q1)) return true;
+	  
+	    // p2, q2 and p1 are colinear and p1 lies on segment p2q2
+	    if (o3 == 0 && onSegment(p2, p1, q2)) return true;
+	  
+	    // p2, q2 and q1 are colinear and q1 lies on segment p2q2
+	    if (o4 == 0 && onSegment(p2, q1, q2)) return true;
+	  
+	    return false; // Doesn't fall in any of the above cases
 	}
 
 	//Ex3 e 4 Reverte o restante array depois do exchange
