@@ -73,30 +73,34 @@ class Grafo{
 	//Ex2.2 Nearest-neighbour first
 	void nnf(){
 		int x;
-		Random  number= new Random();
-		x=number.nextInt(this.tamanho);
-		Point2D temp=new Point2D.Double();
+		Random number= new Random(); x=number.nextInt(this.tamanho);
+		Point2D temp=new Point2D.Double(); //Para ajudar na troca de posiçoes
+
 		int indicemin=0;
+		//Fazer a troca da posição inicial
 		if(x!=0){
 			temp=arrayC[0];
 			arrayC[0]=arrayC[x];
 			arrayC[x]=temp;	
 		}	
-		for(int j=1; j<this.tamanho;j++){
-			double min=arrayC[0].distanceSq(arrayC[j]);
-			int i=0;
-			indicemin=j;
+		System.out.println("Trocou 1pos");
+		printArrayPontos();
+		for(int j=0; j<this.tamanho-1;j++){
+			int i=j+1;
+			double min=arrayC[i].distanceSq(arrayC[j]);
+			indicemin=i;
+			i++;
 			while(i<this.tamanho){
-				if(arrayC[0].distanceSq(arrayC[i]) < min && j!=i){
-					min=arrayC[0].distanceSq(arrayC[i]);
+				if(arrayC[j].distanceSq(arrayC[i]) < min && j!=i){
+					min=arrayC[j].distanceSq(arrayC[i]);
 					indicemin=i;
 				}
 				i++;
 			}
-			if(indicemin != j+1){
+			if(indicemin != j){
 				Point2D a = arrayC[indicemin]; //minimo, passar para o lado esquerdo
-				arrayC[indicemin]=arrayC[j];
-				arrayC[j]=a;
+				arrayC[indicemin]=arrayC[j+1];
+				arrayC[j+1]=a;
 			}
 		}
 	}
@@ -146,8 +150,7 @@ class Grafo{
 
 	// Given three colinear points p, q, r, the function checks if
 	// point q lies on line segment 'pr'
-	static boolean onSegment(Point2D p, Point2D q, Point2D r)
-	{
+	static boolean onSegment(Point2D p, Point2D q, Point2D r){
 	    if (q.getX() <= Math.max(p.getX(), r.getX()) && q.getX() >= Math.min(p.getX(), r.getX()) &&
 	        q.getY() <= Math.max(p.getY(), r.getY()) && q.getY() >= Math.min(p.getY(), r.getY()))
 	    return true;
@@ -160,8 +163,7 @@ class Grafo{
 	// 0 --> p, q and r are colinear
 	// 1 --> Clockwise
 	// 2 --> Counterclockwise
-	static double orientation(Point2D p, Point2D q, Point2D r)
-	{
+	static double orientation(Point2D p, Point2D q, Point2D r){
 	    // See https://www.geeksforgeeks.org/orientation-3-ordered-points/
 	    // for details of below formula.
 	    double val = (q.getY() - p.getY()) * (r.getX() - q.getX()) -
@@ -171,6 +173,7 @@ class Grafo{
 	  
 	    return (val > 0)? 1: 2; // clock or counterclock wise
 	}
+
 	double produtoVet(Point2D p1, Point2D q1, Point2D p2, Point2D q2){
 		Point2D x= new Point2D.Double(q1.getX()-p1.getX(),q1.getY()-p1.getY());
 		Point2D y= new Point2D.Double(q2.getX()-p2.getX(),q2.getY()-p2.getY());
@@ -179,14 +182,8 @@ class Grafo{
 
 	//Ex3 e 4 Verifica se os segmentos se intersetam
 	boolean intersecao(Point2D p1, Point2D q1, Point2D p2, Point2D q2) {
-	    /*double det = (b.getX() - a.getX()) * (d.getY() - c.getY()) - (d.getX() - c.getX()) * (b.getY() - a.getY());
-	    if (det == 0)
-	        return false; //Lines are parallel
-	    double lambda = ((d.getY() - c.getY()) * (d.getX() - a.getX()) + (c.getX() - d.getX()) * (d.getY() - a.getY())) / det;
-	    double gamma = ((a.getY() - b.getY()) * (d.getX()- a.getX()) + (b.getX() - a.getX()) * (d.getY() - a.getY())) / det;
-	    return (0 < lambda && lambda < 1) && (0 < gamma && gamma < 1);*/
-	     // Find the four orientations needed for general and
-    // special cases
+		// Find the four orientations needed for general and
+		// special cases
 	    double o1 = orientation(p1, q1, p2);
 	    double o2 = orientation(p1, q1, q2);
 	    double o3 = orientation(p2, q2, p1);
@@ -420,6 +417,7 @@ class Grafo{
 		}
 		System.out.println();
 	}
+
 	//Imprime os pontos do array
 	void printArrayPontos(){
 		for(int i=0;i<this.tamanho;i++){
@@ -437,15 +435,16 @@ public class RPG{
 		int opcao=0;
 		boolean op1=false;
 		do{
-			clearScreen();
 			MenuExercicios();
 			opcao=ler.nextInt();
 			clearScreen();
+			//Fazer criação do array, caso nao escolha a opçao 1
 			if(opcao!=1 && op1==false){
 				op1=true;
 				System.out.println("Para fazer o exercicio, temos que criar o array de pontos!\n");
 				garf=Ex1(garf);
 			}
+			clearScreen();
 			switch(opcao){
 				case 1: garf= Ex1(garf);
 						op1=true;
@@ -456,11 +455,11 @@ public class RPG{
 						break;
 				case 4: garf=Ex4(garf);
 						break;
-				case 5: 
-						garf=Ex5(garf);
+				case 5: garf=Ex5(garf);
 						break;
 				//case 6: 
 					//	break;
+				default: System.out.println("Opção errada, tente novamente!");
 			}
 			System.out.print("\n\n0(Sair) / Outro Número (Continuar)   ");
 			opcao=ler.nextInt();
@@ -473,6 +472,7 @@ public class RPG{
 	}
 
 	public static void MenuExercicios(){
+		clearScreen();
 		System.out.println("Trabalho 1- IA\n");
 		System.out.println("1 - Gerar aleatoriamente pontos no plano");
 		System.out.println("2 - Determinar um candidato a solução");
@@ -486,11 +486,10 @@ public class RPG{
 	public static Grafo Ex1(Grafo garf){
 		Scanner ler= new Scanner(System.in);
 		System.out.println("Ex1:\n");
-		System.out.print("Quantidade de pontos no plano: ");
-		int n= ler.nextInt();
+		System.out.print("Quantidade de pontos no plano: "); int n= ler.nextInt();
 
-		System.out.print("Insira o range desejado: ");
-		int m= ler.nextInt();
+		System.out.print("Insira o range desejado: "); int m= ler.nextInt();
+
 		garf= new Grafo(n); 
 		garf.criacaoPontos(n,m);
 
@@ -500,7 +499,6 @@ public class RPG{
 	}
 
 	public static Grafo Ex2(Grafo garf){
-		clearScreen();
 		Scanner ler= new Scanner(System.in);
 		int opcao=0;
 		System.out.println("\n Ex2:\n ");
@@ -509,24 +507,27 @@ public class RPG{
 		System.out.println("2-Heuristica 'nearest-neighbour first'");
 		opcao=ler.nextInt();
 		clearScreen();
+		
 		System.out.print("      Array de Original: ");
 		garf.printArrayPontos();
 
 		switch(opcao){
 			case 1: System.out.print("   Permutação de pontos: ");
 					garf.permutation();
-					garf.printArrayPontos();
+					garf.printArrayPontos(); //NOVA ORDEM
 				    break;
+
 			case 2: System.out.print("Nearest-neighbour first: ");
 					garf.nnf();
 					garf.printArrayPontos();
 					break;
+			default: System.out.println("Opção errada, tente novamente!");
+
 		}
 		return garf;
 	}
 
 	public static Grafo Ex3(Grafo garf){
-		clearScreen();
 		System.out.println("Ex3:\n");
 		System.out.print("       Array de Original: ");
 		garf.printArrayPontos();
@@ -537,7 +538,6 @@ public class RPG{
 	}
 
 	public static Grafo Ex4(Grafo garf){
-		clearScreen();
 		Scanner ler= new Scanner(System.in);
 		System.out.println("Ex4:\n");
 		System.out.println("Escolha uma das seguintes alternativas para escolher o candidato na vizinhança “2-exchange”:");
@@ -545,9 +545,9 @@ public class RPG{
 		System.out.println("2-Primeiro candidato nessa vizinhança - 'first-improvement'");
 		System.out.println("3-Menos Conflitos de arestas - menos cruzamentos de arestas");
 		System.out.println("4-Qualquer candidato nessa vizinhaça");
-		
 		int opcao= ler.nextInt();
 		clearScreen();
+
 		switch(opcao){
 			case 1: System.out.print("Original: ");
 					garf.printArrayPontos();
@@ -570,6 +570,9 @@ public class RPG{
 					garf.printArrayPontos();
 					garf.hillClimbing(4);
 					break;
+			default: System.out.println("Opção errada, tente novamente!");
+					
+
 		}
 		return garf;
 	}
