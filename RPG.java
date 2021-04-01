@@ -83,8 +83,8 @@ class Grafo{
 			arrayC[0]=arrayC[x];
 			arrayC[x]=temp;	
 		}	
-		System.out.println("Trocou 1pos");
-		printArrayPontos();
+		//System.out.println("Trocou 1pos");
+		//printArrayPontos();
 		for(int j=0; j<this.tamanho-1;j++){
 			int i=j+1;
 			double min=arrayC[i].distanceSq(arrayC[j]);
@@ -347,17 +347,21 @@ class Grafo{
 		this.best_so_far=arrayC; //estado inicial
 		hill_exchange();
 		double res=0.0;
+		double min=0.0;
+		double max=0.0;
 		//imprimir array
 		while(!lista.isEmpty()){
 			System.out.println("Iteraçao Passada");
 			Point2D[] candidate= opcao(op); //candidato 
-			double min=perimetro(this.best_so_far);
-			double max=perimetro(candidate);
+			lista.clear();//limpamos a lista
+			min=perimetro(this.best_so_far);
+			max=perimetro(candidate);
+
 			if(max<min){
 				max=min;
 				res=max;
 				best_so_far=candidate;
-				//lista.clear();//limpamos a lista
+				
 				hill_exchange();
 			}
 			else{	
@@ -368,7 +372,10 @@ class Grafo{
 			}
 
 		}
-		
+		System.out.println("CARALHO");
+
+		res=min;
+		arrayFinal(best_so_far,res);
 	}
 
 	double acceptanceProbability(double min, double max, double temp) {
