@@ -174,12 +174,7 @@ class Grafo{
 	    return (val > 0)? 1: 2; // clock or counterclock wise
 	}
 
-	double produtoVet(Point2D p1, Point2D q1, Point2D p2, Point2D q2){
-		Point2D x= new Point2D.Double(q1.getX()-p1.getX(),q1.getY()-p1.getY());
-		Point2D y= new Point2D.Double(q2.getX()-p2.getX(),q2.getY()-p2.getY());
-		return (x.getX()*y.getX()) + (x.getY()*y.getY());
-	}
-
+	
 	//Ex3 e 4 Verifica se os segmentos se intersetam
 	boolean intersecao(Point2D p1, Point2D q1, Point2D p2, Point2D q2) {
 		// Find the four orientations needed for general and
@@ -189,15 +184,10 @@ class Grafo{
 	    double o3 = orientation(p2, q2, p1);
 	    double o4 = orientation(p2, q2, q1);
 	  
-	    if(o1*o2<0 || o3*o4<0) return true;
-
-	    if((o1==0 && o2==0) || (o3==0&&o4==0))
-	    	if(produtoVet(p1,q1,p2,q2)>0) return true;
-
-	    // General case
-	    if (o1 != o2 && o3 != o4)
-	        return true;
-	  
+		//general
+	  	if (o1 != o2 && o3 != o4)
+        return true;
+    	
 	    // Special Cases
 	    // p1, q1 and p2 are colinear and p2 lies on segment p1q1
 	    if (o1 == 0 && onSegment(p1, p2, q1)) return true;
@@ -364,18 +354,19 @@ class Grafo{
 				
 				hill_exchange();
 			}
-			else{	
-
-				res=min;
+		
+			else {
+				continue;
+				/*res=min;
 				arrayFinal(best_so_far,res);
-				return;
+				return;*/
 			}
 
 		}
 		System.out.println("CARALHO");
-
-		res=min;
+		//res=min;
 		arrayFinal(best_so_far,res);
+		
 	}
 
 	double acceptanceProbability(double min, double max, double temp) {
