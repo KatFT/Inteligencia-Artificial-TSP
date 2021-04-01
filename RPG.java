@@ -166,14 +166,19 @@ class Grafo{
 	static double orientation(Point2D p, Point2D q, Point2D r){
 	    // See https://www.geeksforgeeks.org/orientation-3-ordered-points/
 	    // for details of below formula.
-	    double val = (q.getY() - p.getY()) * (r.getX() - q.getX()) -
-	            (q.getX() - p.getX()) * (r.getY() - q.getY());
+	    double val = ((q.getY() - p.getY()) * (r.getX() - q.getX()) -
+	            (q.getX() - p.getX()) * (r.getY() - q.getY()));
 	  
 	    if (val == 0) return 0; // colinear
 	  
 	    return (val > 0)? 1: 2; // clock or counterclock wise
 	}
 
+	double produtoVet(Point2D p1, Point2D q1, Point2D p2, Point2D q2){
+		Point2D x= new Point2D.Double(q1.getX()-p1.getX(),q1.getY()-p1.getY());
+		Point2D y= new Point2D.Double(q2.getX()-p2.getX(),q2.getY()-p2.getY());
+		return (x.getX()*y.getX()) + (x.getY()*y.getY());
+	}
 	
 	//Ex3 e 4 Verifica se os segmentos se intersetam
 	boolean intersecao(Point2D p1, Point2D q1, Point2D p2, Point2D q2) {
@@ -184,22 +189,26 @@ class Grafo{
 	    double o3 = orientation(p2, q2, p1);
 	    double o4 = orientation(p2, q2, q1);
 	  
-		//general
-	  	if (o1 != o2 && o3 != o4)
-        return true;
+		if(o1!=o2 && o3!=o4)
+	    	return true;
+
+		else if((o1==0 &&o2==0 && o3==0 &&o4==0)  && produtoVet(p1,q1,p2,q2)>0)
+			return true;
+
     	
+
 	    // Special Cases
 	    // p1, q1 and p2 are colinear and p2 lies on segment p1q1
-	    if (o1 == 0 && onSegment(p1, p2, q1)) return true;
+	    else if (o1 == 0 && onSegment(p1, p2, q1)) return true;
 	  
 	    // p1, q1 and q2 are colinear and q2 lies on segment p1q1
-	    if (o2 == 0 && onSegment(p1, q2, q1)) return true;
+	    else if (o2 == 0 && onSegment(p1, q2, q1)) return true;
 	  
 	    // p2, q2 and p1 are colinear and p1 lies on segment p2q2
-	    if (o3 == 0 && onSegment(p2, p1, q2)) return true;
+	    else if (o3 == 0 && onSegment(p2, p1, q2)) return true;
 	  
 	    // p2, q2 and q1 are colinear and q1 lies on segment p2q2
-	    if (o4 == 0 && onSegment(p2, q1, q2)) return true;
+	    else if (o4 == 0 && onSegment(p2, q1, q2)) return true;
 	  
 	    return false; // Doesn't fall in any of the above cases
 	}
@@ -230,6 +239,7 @@ class Grafo{
 	void hill_exchange(){
 		Point2D[] novoarray;
 		int a=0,b=0;
+		
 		for(int i=1;i<this.tamanho;i++){
 			for(int j=i;j<=this.tamanho;j++){
 				if(j==this.tamanho){
@@ -341,9 +351,8 @@ class Grafo{
 		double max=0.0;
 		//imprimir array
 		while(!lista.isEmpty()){
-			System.out.println("Iteraçao Passada");
+			//System.out.println("Iteraçao Passada");
 			Point2D[] candidate= opcao(op); //candidato 
-			lista.clear();//limpamos a lista
 			min=perimetro(this.best_so_far);
 			max=perimetro(candidate);
 
@@ -351,20 +360,19 @@ class Grafo{
 				max=min;
 				res=max;
 				best_so_far=candidate;
-				
+				lista.clear();//limpamos a lista				
 				hill_exchange();
 			}
 		
 			else {
 				continue;
-				/*res=min;
+				/*res=max;
 				arrayFinal(best_so_far,res);
 				return;*/
 			}
 
 		}
 		System.out.println("CARALHO");
-		//res=min;
 		arrayFinal(best_so_far,res);
 		
 	}
