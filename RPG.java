@@ -106,8 +106,14 @@ class Grafo{
 	}
 
 	//Ex3 Determinar a vizinhança obtida por (2-exchange)
-	void exchange(){
-		System.out.println("Troca de pontos:");
+	void exchange(int op){
+		Point2D[] nvarry;
+		if(op==1)
+			nvarry=arrayC.clone();
+		else
+			nvarry=best_so_far.clone();
+
+		//System.out.println("Troca de pontos:");
 		Point2D[] novoarray;
 		int a=0,b=0;
 		for(int i=1;i<this.tamanho;i++){
@@ -122,16 +128,16 @@ class Grafo{
 				}
 				if(b!=(i-1) && b!=i && a!=i && a!=(i-1)){
 					//se houver interseção, então vai haver a troca de segmentos
-					if(intersecao(arrayC[i],arrayC[i-1],arrayC[b],arrayC[a])){
+					if(intersecao(nvarry[i],nvarry[i-1],nvarry[b],nvarry[a])){
 						//Imprime as trocas
-						System.out.print((lista.size())+": ");
-						System.out.print("("+(int)arrayC[i].getX()+","+(int)arrayC[i].getY()+")");
-						System.out.println("->("+(int) arrayC[a].getX()+","+(int) arrayC[a].getY()+")");
+						//System.out.print((lista.size())+": ");
+						//System.out.print("("+(int)nvarry[i].getX()+","+(int)nvarry[i].getY()+")");
+						//System.out.println("->("+(int) nvarry[a].getX()+","+(int) nvarry[a].getY()+")");
 	
 						if(a<i)	
-							novoarray=reverse(a,i,arrayC.clone());
+							novoarray=reverse(a,i,nvarry.clone());
 						else 
-							novoarray=reverse(i,a,arrayC.clone());
+							novoarray=reverse(i,a,nvarry.clone());
 
 						lista.addLast(new Reta(novoarray));
 						//System.out.print("Array"+ lista.size()+": ");
@@ -142,7 +148,8 @@ class Grafo{
 		}
 		System.out.println();
 		System.out.println("Novo array resultante das trocas anteriores:");
-		printLista();
+		System.out.println(lista.size());
+		//printLista();
 	}
 	
 	//https://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
@@ -235,44 +242,6 @@ class Grafo{
 		return soma;
 	}
 
-	//Ex4 Vai ser utilizado para o hill cimbling
-	void hill_exchange(){
-		Point2D[] novoarray;
-		int a=0,b=0;
-		
-		for(int i=1;i<this.tamanho;i++){
-			for(int j=i;j<=this.tamanho;j++){
-				if(j==this.tamanho){
-					 a=0;
-					 b=this.tamanho-1;
-				}
-				else{
-				 a=j-1;
-				 b=j;
-				}
-				if(b!=(i-1) && b!=i && a!=i && a!=(i-1)){
-					//se houver interseção, então vai haver a troca de segmentos
-					if(intersecao(this.best_so_far[i],this.best_so_far[i-1],this.best_so_far[b],this.best_so_far[a])){
-						//Imprime as trocas
-						//System.out.print("("+(int)this.best_so_far[i].getX()+","+(int)this.best_so_far[i].getY()+")");
-						//System.out.println("->("+(int) this.best_so_far[a].getX()+","+(int) this.best_so_far[a].getY()+")");
-	
-						if(a<i)	
-							novoarray=reverse(a,i,this.best_so_far.clone());
-						else 
-							novoarray=reverse(i,a,this.best_so_far.clone());
-
-						lista.addLast(new Reta(novoarray));
-						//System.out.print("Array"+ lista.size()+": ");
-						//printArrayPontos();
-						//printLista();
-					}
-				}
-			}
-		}
-
-	}
-
 	//Ex4 Opçoes para o hill climbing
 	Point2D[] opcao(int op){
 		//Point2D[] teste;
@@ -345,7 +314,7 @@ class Grafo{
 	//Ex 4 Algoritmo para calcular o array aonde o perimetro e minimo
 	void hillClimbing(int op){
 		this.best_so_far=arrayC; //estado inicial
-		hill_exchange();
+		exchange(2);
 		double res=0.0;
 		double min=0.0;
 		double max=0.0;
@@ -353,28 +322,33 @@ class Grafo{
 		while(!lista.isEmpty()){
 			//System.out.println("Iteraçao Passada");
 			Point2D[] candidate= opcao(op); //candidato 
+			Point2D[] aux=candidate; //candidato 
 			min=perimetro(this.best_so_far);
 			max=perimetro(candidate);
 
 			if(max<min){
-				max=min;
+				min=max;
 				res=max;
 				best_so_far=candidate;
-				lista.clear();//limpamos a lista				
-				hill_exchange();
-			}
-		
-			else {
-				continue;
-				/*res=max;
-				arrayFinal(best_so_far,res);
-				return;*/
-			}
 
+				System.out.print("CARALHO: ");
+				for(int i=0;i<this.tamanho;i++){
+					System.out.print("("+(int)best_so_far[i].getX() + ","+(int)best_so_far[i].getY()+")");
+				}
+				System.out.println();
+
+				lista.clear();//limpamos a lista			
+				exchange(2);					
+			}else{
+				aux=candidate;
+				candidate=best_so_far;	
+				best_so_far=aux;
+				System.out.println("Passou a frente!");
+				lista.clear();
+				exchange(2);
+			}
 		}
-		System.out.println("CARALHO");
-		arrayFinal(best_so_far,res);
-		
+		arrayFinal(best_so_far,res);	
 	}
 
 	double acceptanceProbability(double min, double max, double temp) {
@@ -389,7 +363,7 @@ class Grafo{
 	void simA(){
 		this.best_so_far= arrayC;
 		double temp= (double)inter(arrayC); //temperatura
-		hill_exchange();
+		exchange(2);
 		double res=0.0;
 		while(!lista.isEmpty() && temp>0){
 			//System.out.println("TEMPERATURA CRLH: "+temp);
@@ -397,13 +371,11 @@ class Grafo{
 			double min=perimetro(this.best_so_far);
 			double max=perimetro(candidate);
 			//aceita
-			if(acceptanceProbability(min, max, temp)> Math.random()){
-
+			if(acceptanceProbability(min, max, temp)==1){
 				best_so_far= candidate;
 				res=max;
-				hill_exchange();
+				exchange(2);
 			}
-			res=min;
 			//atualizar a temperatura
 			temp=(double) 0.95*temp;
 
@@ -538,7 +510,7 @@ public class RPG{
 		System.out.print("       Array de Original: ");
 		garf.printArrayPontos();
 		System.out.println("    Vizinhaça 2-exchange:  ");
-		garf.exchange();
+		garf.exchange(1);
 		//garf.printArrayPontos();
 		return garf;
 	}
