@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.LinkedList;
-
+//ola
 class Reta{
 	public Point2D[] x;
 
