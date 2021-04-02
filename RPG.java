@@ -327,6 +327,7 @@ class Grafo{
 			max=perimetro(candidate);
 
 			if(max<min){
+				//ACHO QUE NAO È PRECISO
 				min=max;
 				res=max;
 				best_so_far=candidate;
