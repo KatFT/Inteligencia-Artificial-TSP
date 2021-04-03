@@ -146,9 +146,9 @@ class Grafo{
 				}
 			}
 		}
-		System.out.println();
-		System.out.println("Novo array resultante das trocas anteriores:");
-		System.out.println(lista.size());
+		//System.out.println();
+		//System.out.println("Novo array resultante das trocas anteriores:");
+		//System.out.println(lista.size());
 		//printLista();
 	}
 	
@@ -333,10 +333,10 @@ class Grafo{
 				best_so_far=candidate;
 
 				System.out.print("CARALHO: ");
-				for(int i=0;i<this.tamanho;i++){
+				/*for(int i=0;i<this.tamanho;i++){
 					System.out.print("("+(int)best_so_far[i].getX() + ","+(int)best_so_far[i].getY()+")");
 				}
-				System.out.println();
+				System.out.println();*/
 
 				lista.clear();//limpamos a lista			
 				exchange(2);					
@@ -367,14 +367,25 @@ class Grafo{
 		exchange(2);
 		double res=0.0;
 		while(!lista.isEmpty() && temp>0){
+
 			//System.out.println("TEMPERATURA CRLH: "+temp);
-			Point2D[] candidate= opcao(4);
+			Point2D[] candidate= opcao(3);
+			Point2D[] aux=candidate; //candidato 
 			double min=perimetro(this.best_so_far);
 			double max=perimetro(candidate);
 			//aceita
 			if(acceptanceProbability(min, max, temp)==1){
 				best_so_far= candidate;
 				res=max;
+				lista.clear();
+				exchange(2);
+			}
+			else{
+				aux=candidate;
+				candidate=best_so_far;	
+				best_so_far=aux;
+				System.out.println("Passou a frente!");
+				lista.clear();
 				exchange(2);
 			}
 			//atualizar a temperatura
