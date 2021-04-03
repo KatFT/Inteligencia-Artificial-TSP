@@ -5,7 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.LinkedList;
-//ola oi putaaaa
+
 class Reta{
 	public Point2D[] x;
 
@@ -83,8 +83,7 @@ class Grafo{
 			arrayC[0]=arrayC[x];
 			arrayC[x]=temp;	
 		}	
-		//System.out.println("Trocou 1pos");
-		//printArrayPontos();
+
 		for(int j=0; j<this.tamanho-1;j++){
 			int i=j+1;
 			double min=arrayC[i].distanceSq(arrayC[j]);
@@ -113,7 +112,7 @@ class Grafo{
 		else
 			nvarry=best_so_far.clone();
 
-		//System.out.println("Troca de pontos:");
+
 		Point2D[] novoarray;
 		int a=0,b=0;
 		for(int i=1;i<this.tamanho;i++){
@@ -129,27 +128,19 @@ class Grafo{
 				if(b!=(i-1) && b!=i && a!=i && a!=(i-1)){
 					//se houver interseção, então vai haver a troca de segmentos
 					if(intersecao(nvarry[i],nvarry[i-1],nvarry[b],nvarry[a])){
-						//Imprime as trocas
-						//System.out.print((lista.size())+": ");
-						//System.out.print("("+(int)nvarry[i].getX()+","+(int)nvarry[i].getY()+")");
-						//System.out.println("->("+(int) nvarry[a].getX()+","+(int) nvarry[a].getY()+")");
-	
+		
 						if(a<i)	
 							novoarray=reverse(a,i,nvarry.clone());
 						else 
 							novoarray=reverse(i,a,nvarry.clone());
 
 						lista.addLast(new Reta(novoarray));
-						//System.out.print("Array"+ lista.size()+": ");
-						//printArrayPontos();
+
 					}
 				}
 			}
 		}
-		//System.out.println();
-		//System.out.println("Novo array resultante das trocas anteriores:");
-		//System.out.println(lista.size());
-		//printLista();
+
 	}
 	
 	//https://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
@@ -320,22 +311,16 @@ class Grafo{
 		double max=0.0;
 		//imprimir array
 		while(!lista.isEmpty()){
-			//System.out.println("Iteraçao Passada");
 			Point2D[] candidate= opcao(op); //candidato 
 			Point2D[] aux=candidate; //candidato 
 			min=perimetro(this.best_so_far);
 			max=perimetro(candidate);
 			if(max<min){
-				//ACHO QUE NAO È PRECISO
+
 				min=max;
 				res=max;
 				best_so_far=candidate;
 
-				System.out.print("CARALHO: ");
-				/*for(int i=0;i<this.tamanho;i++){
-					System.out.print("("+(int)best_so_far[i].getX() + ","+(int)best_so_far[i].getY()+")");
-				}
-				System.out.println();*/
 
 				lista.clear();//limpamos a lista			
 				exchange(2);					
@@ -367,7 +352,6 @@ class Grafo{
 		double res=0.0;
 		while(!lista.isEmpty() && temp>0){
 
-			//System.out.println("TEMPERATURA CRLH: "+temp);
 			Point2D[] candidate= opcao(3);
 			Point2D[] aux=candidate; //candidato 
 			double min=perimetro(this.best_so_far);
@@ -383,7 +367,6 @@ class Grafo{
 				aux=candidate;
 				candidate=best_so_far;	
 				best_so_far=aux;
-				System.out.println("Passou a frente!");
 				lista.clear();
 				exchange(2);
 			}
@@ -468,7 +451,6 @@ public class RPG{
 		System.out.println("3 - Determinar a vizinhança obtida por (2-exchange)");
 		System.out.println("4 - Aplicar melhoramento iterativo (hill climbing)");
 		System.out.println("5 - Aplicar simulated annealing");
-		//System.out.println("6 - Aplicar metaheurística ACO (ant colony optimization)");
 		System.out.println("Escolha o exercicio:");
 	}
 	
@@ -541,13 +523,11 @@ public class RPG{
 			case 1: System.out.print("Original: ");
 					garf.printArrayPontos();
 					garf.hillClimbing(1);
-					//garf.printArrayPontos();
 				    break;
 
 			case 2: System.out.print("Original:");
 					garf.printArrayPontos();
 					garf.hillClimbing(2);			
-					//garf.printArrayPontos();
 					break;
 
 			case 3:	System.out.print("Original:");		
@@ -573,7 +553,6 @@ public class RPG{
 		System.out.println("Original:  ");
 		garf.printArrayPontos();
 		garf.simA();
-		//garf.printArrayPontos();
 		return garf;
 	}
 }
