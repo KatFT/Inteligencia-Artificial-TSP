@@ -325,7 +325,7 @@ class Grafo{
 			Point2D[] aux=candidate; //candidato 
 			min=perimetro(this.best_so_far);
 			max=perimetro(candidate);
-
+			//ols
 			if(max<min){
 				//ACHO QUE NAO È PRECISO
 				min=max;
