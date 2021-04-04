@@ -183,9 +183,9 @@ class Grafo{
 	//Ex3 e Ex4-Reverte o restante array depois do exchange
 	Point2D[] reverse(int i,int a, Point2D[] novoarray){
 		for(int j=i;j<a;j++){
-			Point2D temp= novoarray[j];
+			Point2D aux= novoarray[j];
 			novoarray[j]=novoarray[a];
-			novoarray[a]=temp;
+			novoarray[a]=aux;
 			a--;
 		}
 		return novoarray;
@@ -258,60 +258,51 @@ class Grafo{
 
 	//Ex4 e 5-Opçoes para o hill climbing
 	Point2D[] opcao(int op){
+		int increm=0;
 		switch(op){
 			case 1: //minimo perimetro
-					int i=0, pos=0;
-					double j=Double.MAX_VALUE, calc;
-					
+					int indiceMin=0;
+					double minPerim=Double.MAX_VALUE, perimCalc=0;
+
 					for(Reta res : lista){
-						calc=perimetro(res.toarray());
-						if(calc<j){//se for menor, troca e muda a posiçao para computar a metrica
-							j=calc;
-							pos=i;//computa a metrica
+						perimCalc=perimetro(res.toarray());
+
+						if(perimCalc<minPerim){ 
+							minPerim=perimCalc;
+							indiceMin=increm;
 						}
-						i++;//senao avança
+						increm++;
 					}
-					return lista.remove(pos).toarray(); //depois retiramos na lista para ser avaliado
+					return lista.remove(indiceMin).toarray(); //retiramos da lista para ser avaliado
 				
-			case 2: //retiramos o primeiro da lista para ser avaliado
-					return lista.removeFirst().toarray();
+			case 2: return lista.removeFirst().toarray(); //retiramos o primeiro da lista
 					
 			case 3: //retira o elemento da lista com menos conflitos
-					int k=0;
-					double min= Double.MAX_VALUE;
-					int posicao=0;
-					int minimo=0;
+					double minConfl= Double.MAX_VALUE; //minimo de conflitos
+					int indicePos=0, inters=0;
+
 					for(Reta res : lista){
-						Point2D[] b= res.toarray();
-						minimo=inter(b);
-						if(minimo<min){
-							min=minimo;
-							posicao=k;
+						Point2D[] arrayLista= res.toarray();
+						inters=inter(arrayLista); //numero de interseções
+
+						if(inters<minConfl){
+							minConfl=inters;
+							indicePos=increm;
 						}
-						k++;
+						increm++;
 					}
-					return lista.remove(posicao).toarray();
+					return lista.remove(indicePos).toarray();
 					
-			case 4: //retiramos um random da lista para ser avaliado
-					Random s= new Random();
-					return lista.remove(s.nextInt(lista.size())).toarray();
+			case 4: //retiramos um random da lista 
+					Random num= new Random();
+					return lista.remove(num.nextInt(lista.size())).toarray();
+
 			default: return null;
 					
 		}
 
 	}
-
-	//Ex 4 Imprime a solução final
-	void arraySolucao(Point2D[] a,double res){
-		System.out.print("\nArray Solução: ");
-		for(int i=0;i<this.tamanho;i++){
-			System.out.print("("+(int)a[i].getX() + ","+(int)a[i].getY()+")");
-		}
-		System.out.println();
-		System.out.println("Perimetro: "+res);
-		System.out.println();
-	}
-	//Ex4.3 - Funçao para saber o nº interseçoes 
+	//Ex4.3-Funçao para saber o número de interseçoes 
 	int inter(Point2D[] array){
 		int count=0;
 		for(int i=1;i<this.tamanho;i++){
@@ -324,47 +315,16 @@ class Grafo{
 	}
 
 
-	double acceptanceProbability(double min, double max, double temp) {
-        // If the new solution is better, accept it
-        if (max < min) {
-            return 1;
-        }
-        // If the new solution is worse, calculate an acceptance probability
-        return Math.exp((min - max) / temp);
-    }
-
-	void simA(){
-		this.bestSoFar= arrayC;
-		double temp= (double)inter(arrayC); //temperatura
-		exchange(2);
-		double res=0.0;
-		while(!lista.isEmpty() && temp>0){
-
-			Point2D[] candidate= opcao(3);
-			Point2D[] aux=candidate; //candidato 
-			double min=perimetro(this.bestSoFar);
-			double max=perimetro(candidate);
-			//aceita
-			if(acceptanceProbability(min, max, temp)==1){
-				bestSoFar= candidate;
-				res=max;
-				exchange(2);
-			}
-			else{
-				aux=candidate;
-				candidate=bestSoFar;	
-				bestSoFar=aux;
-				exchange(2);
-			}
-			//atualizar a temperatura
-			temp=(double) 0.95*temp;
-
+	//Ex 4-Imprime a solução final
+	void arraySolucao(Point2D[] a,double perimetro){
+		System.out.print("\nArray Solução: ");
+		for(int i=0;i<this.tamanho;i++){
+			System.out.print("("+(int)a[i].getX() + ","+(int)a[i].getY()+")");
 		}
-		arraySolucao(bestSoFar,res);
-
+		System.out.println("\nPerimetro: "+perimetro);
 	}
-
-	//Ex4 Imprime a lista de valores
+	
+	//Ex4-Imprime a lista de valores
 	void printLista(){
 		for(int i=0;i<this.lista.size();i++){
 			System.out.print(i+": ");
@@ -375,6 +335,56 @@ class Grafo{
 		}
 		System.out.println();
 	}
+
+	//Ex5-Simulated annealing, medida de custo cruzamentos de arestas
+	void simA(){
+		this.bestSoFar= arrayC;
+		double temperat= (double)inter(arrayC); //temperatura
+		exchange(2); //criação da lista de candidatos
+
+		double perimetro=0.0;
+		while(!lista.isEmpty() && temperat>0){
+
+			Point2D[] candidate= opcao(3);
+			Point2D[] aux=candidate; //auxiliar troca de pontos 
+			//perimBest=perimetro(this.bestSoFar);
+			//perimCand=perimetro(candidate);
+
+
+			double perimBest=perimetro(this.bestSoFar);
+			double perimCand=perimetro(candidate);
+
+			if(acceptanceProbability(perimBest, perimCand, temperat)==1){
+				bestSoFar= candidate;
+				perimetro=perimCand;
+				exchange(2);
+			}
+			else{
+				aux=candidate;
+				candidate=bestSoFar;	
+				bestSoFar=aux;
+				exchange(2);
+			}
+			//atualizar a temperatura
+			temperat=(double) 0.95*temperat;
+
+		}
+		arraySolucao(bestSoFar,perimetro);
+
+	}
+
+	double acceptanceProbability(double perimBest, double perimCand, double temperat) {
+        // If the new solution is better, accept it
+        if (perimCand < perimBest) {
+            return 1;
+        }
+        // If the new solution is worse, calculate an acceptance probability
+        return Math.exp((perimBest - perimCand) / temperat);
+    }
+
+
+
+	
 
 	//Imprime os pontos do array
 	void printArrayPontos(){
