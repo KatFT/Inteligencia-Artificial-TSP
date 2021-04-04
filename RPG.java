@@ -76,7 +76,7 @@ class Grafo{
 		Random number= new Random();
 		noInicial=number.nextInt(this.tamanho);  //escolher o nó inicial
 		Point2D aux=new Point2D.Double(); //Para ajudar na troca de posiçoes
-		double minDist; //guarda a distancia minima
+		double minDist=0; //guarda a distancia minima
 		int indicemin=0, indComp=0; //guarda o indice minimo encontrado, o indice a comparar aseguir
 
 		//Fazer a troca da posição inicial
@@ -109,45 +109,36 @@ class Grafo{
 	//Ex3 e 4-Determinar a vizinhança obtida por (2-exchange)
 	void exchange(int op){
 		lista.clear();
-		Point2D[] nvArray;  
-		//de acordo com as opçoes copia os valores do array a escolher 
-		if(op==1) 
-			nvArray=arrayC.clone();
+		Point2D[] nvarry;
+		if(op==1)
+			nvarry=arrayC.clone();
 		else
-			nvArray=bestSoFar.clone();
+			nvarry=bestSoFar.clone();
 
-		Point2D[] auxArrayCand;
 
-		//r1p1 e r1p2 - pontos da reta1
-		//r2p1 e r2p2 - pontos da reta2
-		int p1,p2,r1p1; 
-
-		for(int r1p2=1; r1p2<this.tamanho; r1p2++){
-			r1p1=r1p2-1;
-			for(int r2=r1p2; r2<=this.tamanho; r2++){
-				//Caso chegue a ultima reta, ultimo elemento com o primeiro (tamanho-1 -> 0)
-				if(r2==this.tamanho){
-					p1=0;
-					p2=this.tamanho-1;
-				}else{
-					p1=r2-1;
-					p2=r2;
+		Point2D[] novoarray;
+		int a=0,b=0;
+		for(int i=1;i<this.tamanho;i++){
+			for(int j=i;j<=this.tamanho;j++){
+				if(j==this.tamanho){
+					a=0;
+					b=this.tamanho-1;
 				}
-
-				//pontos da reta1 e da reta2 têm que ser diferentes
-				if(p2!=(r1p1) && p2!=r1p2 && p1!=r1p2 && p1!=(r1p1)){
-					if(intersecao(nvArray[r1p2], nvArray[r1p1], nvArray[p2], nvArray[p1])){
-						if(p1<r1p2)	
-							auxArrayCand=reverse(p1,r1p2,nvArray.clone());
+				else{
+					a=j-1;
+					b=j;
+				}
+				if(b!=(i-1) && b!=i && a!=i && a!=(i-1)){
+					//se houver interseção, então vai haver a troca de segmentos
+					if(intersecao(nvarry[i],nvarry[i-1],nvarry[b],nvarry[a])){
+		
+						if(a<i)	
+							novoarray=reverse(a,i,nvarry.clone());
 						else 
-							auxArrayCand=reverse(r1p2,p1,nvArray.clone());
+							novoarray=reverse(i,a,nvarry.clone());
 
-						lista.addLast(new Reta(auxArrayCand));
-						if(op==1){
-							System.out.print((lista.size())+": ");
-							System.out.print("("+(int)arrayC[r1p2].getX()+","+(int)arrayC[r1p2].getY()+")");
-							System.out.println("->("+(int) arrayC[p1].getX()+","+(int) arrayC[p1].getY()+")");
-						}
+						lista.addLast(new Reta(novoarray));
+
 					}
 				}
 			}
@@ -227,33 +218,36 @@ class Grafo{
 
 	//Ex 4-Algoritmo para calcular o array aonde o perimetro é minimo
 	void hillClimbing(int op){
-		double result=0.0, perimBest=0.0, perimCand=0.0;
-		Point2D[] candidate,aux;
-		this.bestSoFar=arrayC; //candidato (pai)
-		exchange(2); //cria a lista de candidatos (filhos)
-		
-
+		this.bestSoFar=arrayC; //estado inicial
+		exchange(2);
+		double res=0.0;
+		double min=0.0;
+		double max=0.0;
+		//imprimir array
 		while(!lista.isEmpty()){
-			candidate= opcao(op); //melhor candidato de acordo com a opçao escolhida 
-			aux=candidate; //auxiliar para troca de pontos  
+			Point2D[] candidate= opcao(op); //candidato 
+			Point2D[] aux=candidate; //candidato 
+			min=perimetro(this.bestSoFar);
+			max=perimetro(candidate);
+			if(max<min){
 
-			perimBest=perimetro(this.bestSoFar);
-			perimCand=perimetro(candidate);
+				min=max;
+				res=max;
+				bestSoFar=candidate;
 
-			if(perimCand<perimBest){
-				result=perimCand;
-				bestSoFar=candidate;		
+
+				lista.clear();//limpamos a lista			
 				exchange(2);					
 			}else{
-				//troca do candidato com o best 
 				aux=candidate;
 				candidate=bestSoFar;	
 				bestSoFar=aux;
 				System.out.println("Passou a frente!");
+				lista.clear();
 				exchange(2);
 			}
 		}
-		arraySolucao(bestSoFar,result);	
+		arraySolucao(bestSoFar,res);	
 	}
 
 	//Ex4 e 5-Opçoes para o hill climbing
@@ -347,16 +341,16 @@ class Grafo{
 
 			Point2D[] candidate= opcao(3);
 			Point2D[] aux=candidate; //auxiliar troca de pontos 
-			//perimBest=perimetro(this.bestSoFar);
-			//perimCand=perimetro(candidate);
+			//pBest=perimetro(this.bestSoFar);
+			//pCand=perimetro(candidate);
 
 
-			double perimBest=perimetro(this.bestSoFar);
-			double perimCand=perimetro(candidate);
+			double pBest=perimetro(this.bestSoFar);
+			double pCand=perimetro(candidate);
 
-			if(acceptanceProbability(perimBest, perimCand, temperat)==1){
+			if(acceptanceProbability(pBest, pCand, temperat)==1){
 				bestSoFar= candidate;
-				perimetro=perimCand;
+				perimetro=pCand;
 				exchange(2);
 			}
 			else{
@@ -373,18 +367,14 @@ class Grafo{
 
 	}
 
-	double acceptanceProbability(double perimBest, double perimCand, double temperat) {
+	double acceptanceProbability(double pBest, double pCand, double temperat) {
         // If the new solution is better, accept it
-        if (perimCand < perimBest) {
+        if (pCand < pBest) {
             return 1;
         }
         // If the new solution is worse, calculate an acceptance probability
-        return Math.exp((perimBest - perimCand) / temperat);
+        return Math.exp((pBest - pCand) / temperat);
     }
-
-
-
-	
 
 	//Imprime os pontos do array
 	void printArrayPontos(){
@@ -394,7 +384,6 @@ class Grafo{
 		System.out.println();
 	}
 }
-
 
 public class RPG{  
 	public static void main(String[] args){
