@@ -1,4 +1,7 @@
 import java.util.Scanner;
+
+import javax.lang.model.util.ElementScanner6;
+
 import java.awt.geom.Point2D; //para as coordenadas
 import java.util.Random; //para criar pontos randoms
 import java.util.Arrays;
@@ -88,13 +91,13 @@ class Grafo{
 		
 		for(int i=0; i<this.tamanho-1;i++){
 			indComp=i+1;
-			minDist=arrayC[indComp].distance(arrayC[i]); //distancia minima inicial
+			minDist=arrayC[indComp].distanceSq(arrayC[i]); //distancia minima inicial
 			indicemin=indComp; 
 			indComp++;
 
 			while(indComp<this.tamanho){
-				if(arrayC[i].distance(arrayC[indComp]) < minDist && i!=indComp){
-					minDist=arrayC[i].distance(arrayC[indComp]);
+				if(arrayC[i].distanceSq(arrayC[indComp]) < minDist && i!=indComp){
+					minDist=arrayC[i].distanceSq(arrayC[indComp]);
 					indicemin=indComp;
 				}
 				indComp++;
@@ -210,48 +213,59 @@ class Grafo{
 	double perimetro(Point2D[] array){
 		double soma=0;
 		for(int i=1;i<this.tamanho;i++){
-			soma+=array[i-1].distance(array[i]);
+			soma+=array[i-1].distanceSq(array[i]);
 		}
-		soma+=array[0].distance(array[this.tamanho-1]);
+		soma+=array[0].distanceSq(array[this.tamanho-1]);
 		return soma;
 	}
 
 	//Ex 4-Algoritmo para calcular o array aonde o perimetro é minimo
 	void hillClimbing(int op){
+		Point2D[] candidate;
 		this.bestSoFar=arrayC; //estado inicial
 		exchange(2);
-		double res=0.0;
-		double min=0.0;
-		double max=0.0;
-		//imprimir array
+			System.out.println("Lista inicial");
+			printLista();
+
+		double res=perimetro(this.bestSoFar);
+		double pBest=0.0;
+		double pCand=0.0;
+		int valorex2=0;
+		
 		while(!lista.isEmpty()){
-			Point2D[] candidate= opcao(op); //candidato 
-			Point2D[] aux=candidate; //candidato 
-			min=perimetro(this.bestSoFar);
-			max=perimetro(candidate);
-			if(max<min){
+			if(op!=2)
+				candidate= opcao(op,0); //de acordo com a opçao 
+			else 
+				if(valorex2<=lista.size())
+					candidate= opcao(op,valorex2); //de acordo com a opçao 
+				else
+					break;
 
-				min=max;
-				res=max;
+			pBest=perimetro(this.bestSoFar);
+			pCand=perimetro(candidate);
+
+			if(pCand<pBest){
+				pBest=pCand;
+				res=pCand;
 				bestSoFar=candidate;
-
-
+				valorex2=0;
+					System.out.print("Tem peri menor");	arraySolucao(bestSoFar,res);	
 				lista.clear();//limpamos a lista			
-				exchange(2);					
-			}else{
-				aux=candidate;
-				candidate=bestSoFar;	
-				bestSoFar=aux;
-				System.out.println("Passou a frente!");
-				lista.clear();
 				exchange(2);
+					printLista();				
+			}else{
+				valorex2++;
+				System.out.println("Passou a frente!");
+				lista.clear();//limpamos a lista			
+				exchange(2);
+
 			}
 		}
 		arraySolucao(bestSoFar,res);	
 	}
 
 	//Ex4 e 5-Opçoes para o hill climbing
-	Point2D[] opcao(int op){
+	Point2D[] opcao(int op, int ex2indice){
 		int increm=0;
 		switch(op){
 			case 1: //minimo perimetro
@@ -269,7 +283,7 @@ class Grafo{
 					}
 					return lista.remove(indiceMin).toarray(); //retiramos da lista para ser avaliado
 				
-			case 2: return lista.removeFirst().toarray(); //retiramos o primeiro da lista
+			case 2: return lista.remove(ex2indice).toarray(); //retiramos o primeiro da lista
 					
 			case 3: //retira o elemento da lista com menos conflitos
 					double minConfl= Double.MAX_VALUE; //minimo de conflitos
@@ -318,14 +332,14 @@ class Grafo{
 		System.out.println("\nPerimetro: "+perimetro);
 	}
 	
-	//Ex4-Imprime a lista de valores
+	//Ex3 e 4-Imprime a lista de valores
 	void printLista(){
 		for(int i=0;i<this.lista.size();i++){
 			System.out.print(i+": ");
 			for(int j=0; j<this.tamanho;j++)
 				System.out.print("("+(int)this.lista.get(i).x[j].getX()+","+(int) this.lista.get(i).x[j].getY()+")");
 
-			System.out.println();
+			System.out.println("  Perimetro: "+ (int)perimetro(lista.get(i).toarray()));
 		}
 		System.out.println();
 	}
@@ -339,7 +353,7 @@ class Grafo{
 		double perimetro=0.0;
 		while(!lista.isEmpty() && temperat>0){
 
-			Point2D[] candidate= opcao(3);
+			Point2D[] candidate= opcao(3,0);
 			Point2D[] aux=candidate; //auxiliar troca de pontos 
 			//pBest=perimetro(this.bestSoFar);
 			//pCand=perimetro(candidate);
@@ -449,7 +463,7 @@ public class RPG{
 		garf= new Grafo(n); 
 		garf.criacaoPontos(n,m);
 
-		System.out.print("Novo Array de pontos: ");
+		System.out.println("\nNovo array de pontos: ");
 		garf.printArrayPontos();
 		return garf;
 	}
@@ -478,7 +492,6 @@ public class RPG{
 					garf.printArrayPontos();
 					break;
 			default: System.out.println("Opção errada, tente novamente!");
-
 		}
 		return garf;
 	}
