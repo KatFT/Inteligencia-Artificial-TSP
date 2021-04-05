@@ -13,7 +13,7 @@ class Reta{
 		x=a.clone();
 	}
 
-	//pega na nossa reta e transforma-a para um array de pontos
+	//transforma para um array de pontos
 	Point2D[] toarray(){
 		return x;
 	}
@@ -22,15 +22,14 @@ class Reta{
 class Grafo{
 	int tamanho; // numero de nos no grafo
 	Point2D[] arrayC; //array aonde vao ficar as coordenadas
-	Point2D[] best_so_far; //usado no hill climbing para determinar o melhor
+	Point2D[] bestSoFar; //usado no hill climbing para determinar o melhor
 	LinkedList<Reta> lista;  
 	
 	Grafo(int tamanho){
 		this.tamanho=0;
 		this.arrayC = new Point2D[tamanho];
-		this.best_so_far= new Point2D[tamanho];
+		this.bestSoFar= new Point2D[tamanho];
 		this.lista= new LinkedList<>();
-
 	}
 
 	//Ex1-Funçao geradora de pontos (Random)
@@ -40,8 +39,8 @@ class Grafo{
 		Random seed= new Random();
 		while(i<n){
 			//int number = random.nextInt(max - min) + min;
-			x= (double)seed.nextInt(2*m) -m;
-			y=(double)seed.nextInt(2*m) -m;
+			x=(double)seed.nextInt(2*m)-m;
+			y=(double)seed.nextInt(2*m)-m;
 			if(!verificarPontos(x,y)){ // vai verificar se existe pontos repetidos
 				arrayC[tamanho++]= new Point2D.Double(x,y);
 				i++;
@@ -110,7 +109,7 @@ class Grafo{
 		if(op==1)
 			nvarry=arrayC.clone();
 		else
-			nvarry=best_so_far.clone();
+			nvarry=bestSoFar.clone();
 
 		Point2D[] novoarray;
 		int a=0,b=0;
@@ -261,7 +260,7 @@ class Grafo{
 					
 			case 3: //retira o elemento da lista com menos conflitos
 					int k=0;
-					double min= Double.MAX_VALUE;
+					int min= Integer.MAX_VALUE;
 					int posicao=0;
 					int minimo=0;
 					for(Reta res : lista){
@@ -288,9 +287,11 @@ class Grafo{
 	int inter(Point2D[] array){
 		int count=0;
 		for(int i=1;i<this.tamanho;i++){
-			for(int j=1;j<this.tamanho;j++){
-				if(intersecao(array[i-1],array[i],array[j-1],array[j]))
+			for(int j=i+1;j<this.tamanho;j++){
+				if(j!=(i-1) && j!=i && j-1!=i && j-1!=(i-1)){
+					if(intersecao(array[i-1],array[i],array[j-1],array[j]))
 					count++;
+				}
 			}
 		}
 		return count;
@@ -309,27 +310,34 @@ class Grafo{
 
 	//Ex 4 Algoritmo para calcular o array aonde o perimetro e minimo
 	void hillClimbing(int op){
-		this.best_so_far=arrayC; //estado inicial
+		this.bestSoFar=arrayC; //estado inicial
 		exchange(2);
-		double res=perimetro(this.best_so_far);
-		double min=0.0;
-		double max=0.0;
-		//arrayFinal(best_so_far,res);
-		//printLista();
+		double res=perimetro(this.bestSoFar);
+		double pBest=0.0, pCand=0.0;
+		int iBest=0, iCand=0;
+		int cont=1;
 		while(!lista.isEmpty()){
 			Point2D[] candidate= opcao(op); //candidato 
-			min=perimetro(this.best_so_far);
-			max=perimetro(candidate);
-			if(max<min){
-				res=max;
-				best_so_far=candidate;
-				lista.clear();//limpamos a lista			
-				exchange(2);					
+			pBest=perimetro(this.bestSoFar);
+			pCand=perimetro(candidate);
+			int op3=0;
+			if(op==3){
+				iBest=inter(this.bestSoFar);
+				iCand=inter(candidate);
+				//System.out.println(iCand+" : "+iBest);
+				if(iCand<iBest)
+					op3=1;
 			}
-			//arrayFinal(best_so_far,res);
-			//printLista();
+			if(pCand<pBest || op3==1){					
+				bestSoFar=candidate;
+				res=pCand;
+				lista.clear();			
+				exchange(2);	
+			}
+			cont++;
 		}
-		arrayFinal(best_so_far,res);	
+		arrayFinal(bestSoFar,res);	
+		System.out.println("Iterações do programa: " +cont);
 	}
 
 	double acceptanceProbability(double min, double max, double temp) {
@@ -342,36 +350,29 @@ class Grafo{
     }
 
 	void simA(){
-		this.best_so_far= arrayC;
+		this.bestSoFar= arrayC;
 		double temp= (double)inter(arrayC); //temperatura
 		exchange(2);
 		double res=0.0;
+		int cont=1;
 		while(!lista.isEmpty() && temp>0){
 
 			Point2D[] candidate= opcao(3);
-			Point2D[] aux=candidate; //candidato 
-			double min=perimetro(this.best_so_far);
+			double min=perimetro(this.bestSoFar);
 			double max=perimetro(candidate);
 			//aceita
 			if(acceptanceProbability(min, max, temp)==1){
-				best_so_far= candidate;
+				bestSoFar= candidate;
 				res=max;
-				lista.clear();
-				exchange(2);
-			}
-			else{
-				aux=candidate;
-				candidate=best_so_far;	
-				best_so_far=aux;
 				lista.clear();
 				exchange(2);
 			}
 			//atualizar a temperatura
 			temp=(double) 0.95*temp;
-
+			cont++;
 		}
-		arrayFinal(best_so_far,res);
-
+		arrayFinal(bestSoFar,res);
+		System.out.println("Iterações do programa: " +cont);
 	}
 
 	//Ex4 Imprime a lista de valores
