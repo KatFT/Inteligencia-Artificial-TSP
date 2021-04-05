@@ -1,7 +1,4 @@
 import java.util.Scanner;
-
-import javax.lang.model.util.ElementScanner6;
-
 import java.awt.geom.Point2D; //para as coordenadas
 import java.util.Random; //para criar pontos randoms
 import java.util.Arrays;
@@ -16,22 +13,22 @@ class Reta{
 		x=a.clone();
 	}
 
-	//Transforma a classe reta para um array de pontos
-	Point2D[] toarray(){ 
+	//pega na nossa reta e transforma-a para um array de pontos
+	Point2D[] toarray(){
 		return x;
 	}
 }
 
 class Grafo{
-	int tamanho; // nº de nos 
-	Point2D[] arrayC; //array das coordenadas
-	Point2D[] bestSoFar; //usado no hill climbing para determinar o melhor candidato
-	LinkedList<Reta> lista;   //guardar os candidatos
+	int tamanho; // numero de nos no grafo
+	Point2D[] arrayC; //array aonde vao ficar as coordenadas
+	Point2D[] best_so_far; //usado no hill climbing para determinar o melhor
+	LinkedList<Reta> lista;  
 	
 	Grafo(int tamanho){
 		this.tamanho=0;
 		this.arrayC = new Point2D[tamanho];
-		this.bestSoFar= new Point2D[tamanho];
+		this.best_so_far= new Point2D[tamanho];
 		this.lista= new LinkedList<>();
 
 	}
@@ -62,7 +59,7 @@ class Grafo{
 		return false;
 	}
 
-	//Ex2.1-Permutação de pontos
+	//Ex2.1  Permutação de pontos
 	void permutation(){
 		Random number= new Random();
 		for(int i=1;i<this.tamanho;i++){
@@ -73,244 +70,221 @@ class Grafo{
 		}
 	}
 
-	//Ex2.2-Nearest-neighbour first
+	//Ex2.2 Nearest-neighbour first
 	void nnf(){
-		int noInicial;
-		Random number= new Random();
-		noInicial=number.nextInt(this.tamanho);  //escolher o nó inicial
-		Point2D aux=new Point2D.Double(); //Para ajudar na troca de posiçoes
-		double minDist=0; //guarda a distancia minima
-		int indicemin=0, indComp=0; //guarda o indice minimo encontrado, o indice a comparar aseguir
+		int x;
+		Random number= new Random(); x=number.nextInt(this.tamanho);
+		Point2D temp=new Point2D.Double(); //Para ajudar na troca de posiçoes
 
+		int indicemin=0;
 		//Fazer a troca da posição inicial
-		if(noInicial!=0){
-			aux=arrayC[0];
-			arrayC[0]=arrayC[noInicial];
-			arrayC[noInicial]=aux;	
+		if(x!=0){
+			temp=arrayC[0];
+			arrayC[0]=arrayC[x];
+			arrayC[x]=temp;	
 		}	
-		
-		for(int i=0; i<this.tamanho-1;i++){
-			indComp=i+1;
-			minDist=arrayC[indComp].distanceSq(arrayC[i]); //distancia minima inicial
-			indicemin=indComp; 
-			indComp++;
 
-			while(indComp<this.tamanho){
-				if(arrayC[i].distanceSq(arrayC[indComp]) < minDist && i!=indComp){
-					minDist=arrayC[i].distanceSq(arrayC[indComp]);
-					indicemin=indComp;
+		for(int j=0; j<this.tamanho-1;j++){
+			int i=j+1;
+			double min=arrayC[i].distance(arrayC[j]);
+			indicemin=i;
+			i++;
+			while(i<this.tamanho){
+				if(arrayC[j].distance(arrayC[i]) < min && j!=i){
+					min=arrayC[j].distance(arrayC[i]);
+					indicemin=i;
 				}
-				indComp++;
+				i++;
 			}
-			//organizar o array, minimo passa para o lado esquerdo (i+1)
-			aux = arrayC[indicemin]; 
-			arrayC[indicemin]=arrayC[i+1];
-			arrayC[i+1]=aux;
+			if(indicemin != j){
+				Point2D a = arrayC[indicemin]; //minimo, passar para o lado esquerdo
+				arrayC[indicemin]=arrayC[j+1];
+				arrayC[j+1]=a;
+			}
 		}
 	}
 
-	//Ex3 e 4-Determinar a vizinhança obtida por (2-exchange)
+	//Ex3 Determinar a vizinhança obtida por (2-exchange)
 	void exchange(int op){
-		lista.clear();
 		Point2D[] nvarry;
 		if(op==1)
 			nvarry=arrayC.clone();
 		else
-			nvarry=bestSoFar.clone();
-
+			nvarry=best_so_far.clone();
 
 		Point2D[] novoarray;
 		int a=0,b=0;
-		for(int i=1;i<this.tamanho;i++){
-			for(int j=i;j<=this.tamanho;j++){
-				if(j==this.tamanho){
+		for(int i=1;i<this.tamanho-2;i++){
+			for(int j=i+1;j<this.tamanho;j++){
+				if(j+1==this.tamanho){
 					a=0;
 					b=this.tamanho-1;
 				}
 				else{
-					a=j-1;
+					a=j+1;
 					b=j;
 				}
 				if(b!=(i-1) && b!=i && a!=i && a!=(i-1)){
 					//se houver interseção, então vai haver a troca de segmentos
-					if(intersecao(nvarry[i],nvarry[i-1],nvarry[b],nvarry[a])){
-		
-						if(a<i)	
-							novoarray=reverse(a,i,nvarry.clone());
+					if(intersecao(nvarry[i-1],nvarry[i],nvarry[b],nvarry[a])){
+						
+						//Imprime as trocas
+						//System.out.print("\n \n("+(i-1)+","+i+") -> (" +b+","+ a +")\n");
+						//System.out.print((lista.size())+": ");
+						//System.out.print("("+(int)nvarry[i].getX()+","+(int)nvarry[i].getY()+")");
+						//System.out.println("->("+(int) nvarry[b].getX()+","+(int) nvarry[b].getY()+")\n");
+
+						if(b<i)	
+							novoarray=reverse(b,i,nvarry.clone());
 						else 
-							novoarray=reverse(i,a,nvarry.clone());
+							novoarray=reverse(i,b,nvarry.clone());
 
 						lista.addLast(new Reta(novoarray));
-
 					}
 				}
 			}
 		}
+		//System.out.println("Criou a lista com " +lista.size()+" interseções.");
+		if(op==1)
+		printLista();
 	}
+	
+	//https://www.geeksforgeeks.org/check-if-two-given-line-segments-intersect/
+	
 
-	//Ex3 e 4-Verifica se os segmentos se intersetam
-	boolean intersecao(Point2D p1, Point2D q1, Point2D p2, Point2D q2) {
-		//indica as orientações dos segmentos
-	    double o1 = orientation(p1, q1, p2);
-	    double o2 = orientation(p1, q1, q2);
-	    double o3 = orientation(p2, q2, p1);
-	    double o4 = orientation(p2, q2, q1);
-	  
-		if(o1!=o2 && o3!=o4) return true;
-		if((o1==0 &&o2==0 && o3==0 &&o4==0)  && produtoVet(p1,q1,p2,q2)>0)	return true;
-
-	    // p1, q1 e p2 sao colineares e p2 é colinear com p1q1
-	    if (o1 == 0 && onSegment(p1, p2, q1)) return true;
-	  
-	    // p1, q1 e q2 sao colineares e q2 é colinear com p1q1
-	    if (o2 == 0 && onSegment(p1, q2, q1)) return true;
-	  
-	    // p2, q2 e p1 sao colineares e p1 é colinear com p2q2
-	    if (o3 == 0 && onSegment(p2, p1, q2)) return true;
-	  
-	    // p2, q2 e q1 sao colineares e q1 é colinear com p2q2
-	    if (o4 == 0 && onSegment(p2, q1, q2)) return true;
-	  
-	    return false;
-	}
-
-	//Ex3 e Ex4-Reverte o restante array depois do exchange
-	Point2D[] reverse(int i,int a, Point2D[] novoarray){
-		for(int j=i;j<a;j++){
-			Point2D aux= novoarray[j];
-			novoarray[j]=novoarray[a];
-			novoarray[a]=aux;
-			a--;
-		}
-		return novoarray;
-	}
-
-	//Ex3 e 4-Verifica se um ponto esta contido numa segmentos
+	// Given three colinear points p, q, r, the function checks if
+	// point q lies on line segment 'pr'
 	static boolean onSegment(Point2D p, Point2D q, Point2D r){
-	    if (q.getX() <= Math.max(p.getX(), r.getX()) && 
-			q.getX() >= Math.min(p.getX(), r.getX()) && 
-			q.getY() <= Math.max(p.getY(), r.getY()) && 
-			q.getY() >= Math.min(p.getY(), r.getY()))
-	    	return true;
+	    if (q.getX() <= Math.max(p.getX(), r.getX()) && q.getX() >= Math.min(p.getX(), r.getX()) &&
+	        q.getY() <= Math.max(p.getY(), r.getY()) && q.getY() >= Math.min(p.getY(), r.getY()))
+	    return true;
+	  
 	    return false;
 	}
 	  
-	//Ex3 e 4-Encontrar a orientação do trio ordenado (p, q, r).
+	// To find orientation of ordered triplet (p, q, r).
+	// The function returns following values
+	// 0 --> p, q and r are colinear
+	// 1 --> Clockwise
+	// 2 --> Counterclockwise
 	static double orientation(Point2D p, Point2D q, Point2D r){
-	    double val = ((q.getY() - p.getY()) * (r.getX() - q.getX())-(q.getX() - p.getX()) * (r.getY() - q.getY()));
-	    if (val == 0) return 0; //p, q e r são colineares
-	    return (val > 0)? 1: 2; //sentido horário ou sentido anti-horário 
+	    // See https://www.geeksforgeeks.org/orientation-3-ordered-points/
+	    // for details of below formula.
+	    double val = ((q.getY() - p.getY()) * (r.getX() - q.getX()) -
+	            (q.getX() - p.getX()) * (r.getY() - q.getY()));
+	  
+	    if (val == 0) return 0; // colinear
+	  
+	    return (val > 0)? 1: 2; // clock or counterclock wise
 	}
 
-	//Ex3 e 4-Produto Vetorial
 	double produtoVet(Point2D p1, Point2D q1, Point2D p2, Point2D q2){
 		Point2D x= new Point2D.Double(q1.getX()-p1.getX(),q1.getY()-p1.getY());
 		Point2D y= new Point2D.Double(q2.getX()-p2.getX(),q2.getY()-p2.getY());
 		return (x.getX()*y.getX()) + (x.getY()*y.getY());
 	}
 	
-	//Ex4 e 5-Calcula o perimetro do poligono
+	//Ex3 e 4 Verifica se os segmentos se intersetam
+	boolean intersecao(Point2D p1, Point2D q1, Point2D p2, Point2D q2) {
+		// Find the four orientations needed for general and
+		// special cases
+	    double o1 = orientation(p1, q1, p2);
+	    double o2 = orientation(p1, q1, q2);
+	    double o3 = orientation(p2, q2, p1);
+	    double o4 = orientation(p2, q2, q1);
+	  
+		if(o1!=o2 && o3!=o4)
+	    	return true;
+
+		else if((o1==0 &&o2==0 && o3==0 &&o4==0)  && produtoVet(p1,q1,p2,q2)>0)
+			return true;
+
+    	
+
+	    // Special Cases
+	    // p1, q1 and p2 are colinear and p2 lies on segment p1q1
+	    else if (o1 == 0 && onSegment(p1, p2, q1)) return true;
+	  
+	    // p1, q1 and q2 are colinear and q2 lies on segment p1q1
+	    else if (o2 == 0 && onSegment(p1, q2, q1)) return true;
+	  
+	    // p2, q2 and p1 are colinear and p1 lies on segment p2q2
+	    else if (o3 == 0 && onSegment(p2, p1, q2)) return true;
+	  
+	    // p2, q2 and q1 are colinear and q1 lies on segment p2q2
+	    else if (o4 == 0 && onSegment(p2, q1, q2)) return true;
+	  
+	    return false; // Doesn't fall in any of the above cases
+	}
+
+	//Ex3 e 4 Reverte o restante array depois do exchange
+	Point2D[] reverse(int i,int a, Point2D[] novoarray){
+		for(int j=i;j<a;j++){
+			Point2D temp= novoarray[j];
+			novoarray[j]=novoarray[a];
+			novoarray[a]=temp;
+			a--;
+		}
+		return novoarray;
+	}
+	
+
+	//Ex4 Calcula o perimetro do poligono
 	double perimetro(Point2D[] array){
 		double soma=0;
 		for(int i=1;i<this.tamanho;i++){
-			soma+=array[i-1].distanceSq(array[i]);
+			soma+=array[i-1].distance(array[i]);
 		}
-		soma+=array[0].distanceSq(array[this.tamanho-1]);
+		soma+=array[0].distance(array[this.tamanho-1]);
 		return soma;
 	}
 
-	//Ex 4-Algoritmo para calcular o array aonde o perimetro é minimo
-	void hillClimbing(int op){
-		Point2D[] candidate;
-		this.bestSoFar=arrayC; //estado inicial
-		exchange(2);
-			System.out.println("Lista inicial");
-			printLista();
-
-		double res=perimetro(this.bestSoFar);
-		double pBest=0.0;
-		double pCand=0.0;
-		int valorex2=0;
-		
-		while(!lista.isEmpty()){
-			if(op!=2)
-				candidate= opcao(op,0); //de acordo com a opçao 
-			else 
-				if(valorex2<=lista.size())
-					candidate= opcao(op,valorex2); //de acordo com a opçao 
-				else
-					break;
-
-			pBest=perimetro(this.bestSoFar);
-			pCand=perimetro(candidate);
-
-			if(pCand<pBest){
-				pBest=pCand;
-				res=pCand;
-				bestSoFar=candidate;
-				valorex2=0;
-					System.out.print("Tem peri menor");	arraySolucao(bestSoFar,res);	
-				lista.clear();//limpamos a lista			
-				exchange(2);
-					printLista();				
-			}else{
-				valorex2++;
-				System.out.println("Passou a frente!");
-				lista.clear();//limpamos a lista			
-				exchange(2);
-
-			}
-		}
-		arraySolucao(bestSoFar,res);	
-	}
-
-	//Ex4 e 5-Opçoes para o hill climbing
-	Point2D[] opcao(int op, int ex2indice){
-		int increm=0;
+	//Ex4 Opçoes para o hill climbing
+	Point2D[] opcao(int op){
 		switch(op){
-			case 1: //minimo perimetro
-					int indiceMin=0;
-					double minPerim=Double.MAX_VALUE, perimCalc=0;
-
-					for(Reta res : lista){
-						perimCalc=perimetro(res.toarray());
-
-						if(perimCalc<minPerim){ 
-							minPerim=perimCalc;
-							indiceMin=increm;
+			case 1: //perimetro
+					int i=0;
+					double j=Double.MAX_VALUE;
+					int pos=0; //guarda posiçao
+					for(Reta res : lista){ //para cada posiçao da lista
+						double calc=perimetro(res.toarray());//calculamos o perimetro
+						if(calc<j){//se for menor, troca e muda a posiçao para computar a metrica
+							j=calc;
+							pos=i;//computa a metrica
 						}
-						increm++;
+						i++;//senao avança
 					}
-					return lista.remove(indiceMin).toarray(); //retiramos da lista para ser avaliado
-				
-			case 2: return lista.remove(ex2indice).toarray(); //retiramos o primeiro da lista
+					return lista.remove(pos).toarray(); //depois retiramos na lista para ser avaliado
+					
+			case 2: //retiramos o primeiro da lista para ser avaliado
+					return lista.removeFirst().toarray();
 					
 			case 3: //retira o elemento da lista com menos conflitos
-					double minConfl= Double.MAX_VALUE; //minimo de conflitos
-					int indicePos=0, inters=0;
-
+					int k=0;
+					double min= Double.MAX_VALUE;
+					int posicao=0;
+					int minimo=0;
 					for(Reta res : lista){
-						Point2D[] arrayLista= res.toarray();
-						inters=inter(arrayLista); //numero de interseções
-
-						if(inters<minConfl){
-							minConfl=inters;
-							indicePos=increm;
+						Point2D[] b= res.toarray();
+						minimo=inter(b);
+						if(minimo<min){
+							min=minimo;
+							posicao=k;
 						}
-						increm++;
+						k++;
 					}
-					return lista.remove(indicePos).toarray();
+					return lista.remove(posicao).toarray();
 					
-			case 4: //retiramos um random da lista 
-					Random num= new Random();
-					return lista.remove(num.nextInt(lista.size())).toarray();
-
+			case 4: //retiramos um random da lista para ser avaliado
+					Random s= new Random();
+					return lista.remove(s.nextInt(lista.size())).toarray();
 			default: return null;
 					
 		}
 
 	}
-	//Ex4.3-Funçao para saber o número de interseçoes 
+
+	//Ex4.3 - Funçao para saber o nº interseçoes 
 	int inter(Point2D[] array){
 		int count=0;
 		for(int i=1;i<this.tamanho;i++){
@@ -322,73 +296,95 @@ class Grafo{
 		return count;
 	}
 
-
-	//Ex 4-Imprime a solução final
-	void arraySolucao(Point2D[] a,double perimetro){
+	//Ex 4 Imprime a solução final
+	void arrayFinal(Point2D[] a,double res){
 		System.out.print("\nArray Solução: ");
 		for(int i=0;i<this.tamanho;i++){
 			System.out.print("("+(int)a[i].getX() + ","+(int)a[i].getY()+")");
 		}
-		System.out.println("\nPerimetro: "+perimetro);
-	}
-	
-	//Ex3 e 4-Imprime a lista de valores
-	void printLista(){
-		for(int i=0;i<this.lista.size();i++){
-			System.out.print(i+": ");
-			for(int j=0; j<this.tamanho;j++)
-				System.out.print("("+(int)this.lista.get(i).x[j].getX()+","+(int) this.lista.get(i).x[j].getY()+")");
-
-			System.out.println("  Perimetro: "+ (int)perimetro(lista.get(i).toarray()));
-		}
+		System.out.println();
+		System.out.println("Perimetro: "+res);
 		System.out.println();
 	}
 
-	//Ex5-Simulated annealing, medida de custo cruzamentos de arestas
+	//Ex 4 Algoritmo para calcular o array aonde o perimetro e minimo
+	void hillClimbing(int op){
+		this.best_so_far=arrayC; //estado inicial
+		exchange(2);
+		double res=perimetro(this.best_so_far);
+		double min=0.0;
+		double max=0.0;
+		//arrayFinal(best_so_far,res);
+		//printLista();
+		while(!lista.isEmpty()){
+			Point2D[] candidate= opcao(op); //candidato 
+			min=perimetro(this.best_so_far);
+			max=perimetro(candidate);
+			if(max<min){
+				res=max;
+				best_so_far=candidate;
+				lista.clear();//limpamos a lista			
+				exchange(2);					
+			}
+			//arrayFinal(best_so_far,res);
+			//printLista();
+		}
+		arrayFinal(best_so_far,res);	
+	}
+
+	double acceptanceProbability(double min, double max, double temp) {
+        // If the new solution is better, accept it
+        if (max < min) {
+            return 1;
+        }
+        // If the new solution is worse, calculate an acceptance probability
+        return Math.exp((min - max) / temp);
+    }
+
 	void simA(){
-		this.bestSoFar= arrayC;
-		double temperat= (double)inter(arrayC); //temperatura
-		exchange(2); //criação da lista de candidatos
+		this.best_so_far= arrayC;
+		double temp= (double)inter(arrayC); //temperatura
+		exchange(2);
+		double res=0.0;
+		while(!lista.isEmpty() && temp>0){
 
-		double perimetro=0.0;
-		while(!lista.isEmpty() && temperat>0){
-
-			Point2D[] candidate= opcao(3,0);
-			Point2D[] aux=candidate; //auxiliar troca de pontos 
-			//pBest=perimetro(this.bestSoFar);
-			//pCand=perimetro(candidate);
-
-
-			double pBest=perimetro(this.bestSoFar);
-			double pCand=perimetro(candidate);
-
-			if(acceptanceProbability(pBest, pCand, temperat)==1){
-				bestSoFar= candidate;
-				perimetro=pCand;
+			Point2D[] candidate= opcao(3);
+			Point2D[] aux=candidate; //candidato 
+			double min=perimetro(this.best_so_far);
+			double max=perimetro(candidate);
+			//aceita
+			if(acceptanceProbability(min, max, temp)==1){
+				best_so_far= candidate;
+				res=max;
+				lista.clear();
 				exchange(2);
 			}
 			else{
 				aux=candidate;
-				candidate=bestSoFar;	
-				bestSoFar=aux;
+				candidate=best_so_far;	
+				best_so_far=aux;
+				lista.clear();
 				exchange(2);
 			}
 			//atualizar a temperatura
-			temperat=(double) 0.95*temperat;
+			temp=(double) 0.95*temp;
 
 		}
-		arraySolucao(bestSoFar,perimetro);
+		arrayFinal(best_so_far,res);
 
 	}
 
-	double acceptanceProbability(double pBest, double pCand, double temperat) {
-        // If the new solution is better, accept it
-        if (pCand < pBest) {
-            return 1;
-        }
-        // If the new solution is worse, calculate an acceptance probability
-        return Math.exp((pBest - pCand) / temperat);
-    }
+	//Ex4 Imprime a lista de valores
+	void printLista(){
+		for(int i=0;i<this.lista.size();i++){
+			System.out.print(i+": ");
+			for(int j=0; j<this.tamanho;j++)
+				System.out.print("("+(int)this.lista.get(i).x[j].getX()+","+(int) this.lista.get(i).x[j].getY()+")  ");
+
+			System.out.println();
+		}
+		System.out.println();
+	}
 
 	//Imprime os pontos do array
 	void printArrayPontos(){
@@ -398,6 +394,7 @@ class Grafo{
 		System.out.println();
 	}
 }
+
 
 public class RPG{  
 	public static void main(String[] args){
@@ -463,7 +460,7 @@ public class RPG{
 		garf= new Grafo(n); 
 		garf.criacaoPontos(n,m);
 
-		System.out.println("\nNovo array de pontos: ");
+		System.out.print("Novo Array de pontos: ");
 		garf.printArrayPontos();
 		return garf;
 	}
@@ -492,6 +489,7 @@ public class RPG{
 					garf.printArrayPontos();
 					break;
 			default: System.out.println("Opção errada, tente novamente!");
+
 		}
 		return garf;
 	}
@@ -502,8 +500,7 @@ public class RPG{
 		garf.printArrayPontos();
 		System.out.println("    Vizinhaça 2-exchange:  ");
 		garf.exchange(1);
-		System.out.println();
-		garf.printLista();
+		//garf.printArrayPontos();
 		return garf;
 	}
 
