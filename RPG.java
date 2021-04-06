@@ -243,6 +243,9 @@ class Grafo{
 	//Ex 4-Algoritmo HiilClimbing com menor perimentro ou menor interseções
 	void hillClimbing(int op){
 		long startTime = System.currentTimeMillis();
+		System.out.println("Original: ");
+		garf.printArrayPontos();
+
 		this.bestSoFar=arrayC; //estado inicial
 		double perimetroMin=perimetro(this.bestSoFar);
 		double pBest=0.0, pCand=0.0; //Perimentros
@@ -555,8 +558,6 @@ public class RPG{
 		int opcao= ler.nextInt();
 		clearScreen();
 
-		System.out.println("Original: ");
-		garf.printArrayPontos();
 		switch(opcao){
 			case 1: garf.hillClimbing(1);
 				    break;
