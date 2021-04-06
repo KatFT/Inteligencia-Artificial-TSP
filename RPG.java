@@ -52,7 +52,7 @@ class Grafo{
 		System.out.println("Novo Array de pontos: ");
 		printArrayPontos();
 		long endTime = System.currentTimeMillis();
-		System.out.println("\nDemorou " + (endTime - startTime) + " millisegundos");
+		System.out.println("\nDemorou " + (endTime - startTime) + " milisegundos");
 	}
 
 	//Ex1-Verifica se os pontos já existem no array
@@ -68,7 +68,7 @@ class Grafo{
 	//Ex2.1-Permutação de pontos
 	void permutation(){
 		long startTime = System.currentTimeMillis();
-		System.out.println("Array de Original: ");
+		System.out.println("Array Original: ");
 		printArrayPontos();
 		
 		System.out.println("\nPermutação de pontos: ");
@@ -81,13 +81,13 @@ class Grafo{
 		}
 		printArrayPontos(); //NOVA ORDEM
 		long endTime = System.currentTimeMillis();
-		System.out.println("\nDemorou " + (endTime - startTime) + " millisegundos");
+		System.out.println("\nDemorou " + (endTime - startTime) + " milisegundos");
 	}
 
 	//Ex2.2-Nearest-neighbour first
 	void nnf(){
 		long startTime = System.currentTimeMillis();
-		System.out.println("Array de Original: ");
+		System.out.println("Array Original: ");
 		printArrayPontos();
 		System.out.println("\nNearest-neighbour first: ");
 					
@@ -125,7 +125,7 @@ class Grafo{
 		}
 		printArrayPontos(); //NOVA ORDEM
 		long endTime = System.currentTimeMillis();
-		System.out.println("\nDemorou " + (endTime - startTime) + " millisegundos");
+		System.out.println("\nDemorou " + (endTime - startTime) + " milisegundos");
 	}
 
 	//Ex3 e 4-Determinar a vizinhança obtida por (2-exchange)
@@ -251,10 +251,11 @@ class Grafo{
 		double pBest=0.0, pCand=0.0; //Perimentros
 		int iBest=0, iCand=0; //Interseções
 		int cont=0; //contador de iterações
+		Point2D[] candidate;
 
 		exchange(2); //cria a lista de candidatos de acordo com o bestSoFar
 		while(!lista.isEmpty()){
-			Point2D[] candidate= opcao(op); //melhor candidato de acordo com a opçao escolhida 
+			candidate= opcao(op); //melhor candidato de acordo com a opçao escolhida 
 			pBest=perimetro(this.bestSoFar);
 			pCand=perimetro(candidate);
 
@@ -275,7 +276,7 @@ class Grafo{
 		arrayFinal(bestSoFar,perimetroMin);	
 
 		long endTime = System.currentTimeMillis();
-		System.out.println("\nDemorou " + (endTime - startTime) + " millisegundos");
+		System.out.println("\nDemorou " + (endTime - startTime) + " milisegundos");
 		System.out.println("Iterações do programa: " +cont);
 	}
 	
@@ -367,7 +368,7 @@ class Grafo{
 		}
 		arrayFinal(bestSoFar,perimetro);
 		long endTime = System.currentTimeMillis();
-		System.out.println("\nDemorou " + (endTime - startTime) + " millisegundos");
+		System.out.println("\nDemorou " + (endTime - startTime) + " milisegundos");
 		System.out.println("Iterações do programa: " +cont);
 	}
 
@@ -531,19 +532,19 @@ public class RPG{
 		clearScreen();
 
 		System.out.println("Ex3:\n");
-		System.out.println("Array de Original: ");
+		System.out.println("Array  ");
 		garf.printArrayPontos();
-		System.out.println("Vizinhaça 2-exchange:  ");
+		System.out.println("\nVizinhança 2-exchange:  ");
 
 		long startTime = System.currentTimeMillis();
 		garf.exchange(1);
 				
 		if(opcao==0)
 			garf.printLista();
-		System.out.println("Números de elementos da lista: "+garf.lista.size());
+		System.out.println("Números de candidatos da lista: "+garf.lista.size());
 
 		long endTime = System.currentTimeMillis();
-		System.out.println("\nDemorou " + (endTime - startTime) + " millisegundos");
+		System.out.println("\nDemorou " + (endTime - startTime) + " milisegundos");
 		return garf;
 	}
 
