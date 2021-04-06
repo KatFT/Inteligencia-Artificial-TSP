@@ -49,7 +49,7 @@ class Grafo{
 				indice++;
 			}
 		}
-		System.out.print("Novo Array de pontos: ");
+		System.out.println("Novo Array de pontos: ");
 		printArrayPontos();
 		long endTime = System.currentTimeMillis();
 		System.out.println("\nDemorou " + (endTime - startTime) + " millisegundos");
@@ -68,6 +68,10 @@ class Grafo{
 	//Ex2.1-Permutação de pontos
 	void permutation(){
 		long startTime = System.currentTimeMillis();
+		System.out.println("Array de Original: ");
+		printArrayPontos();
+		
+		System.out.println("\nPermutação de pontos: ");
 		Random number= new Random();
 		for(int i=1;i<this.tamanho;i++){
 			int swap= number.nextInt(this.tamanho);
@@ -75,6 +79,7 @@ class Grafo{
 			arrayC[swap]=arrayC[i];
 			arrayC[i]=aux;
 		}
+		printArrayPontos(); //NOVA ORDEM
 		long endTime = System.currentTimeMillis();
 		System.out.println("\nDemorou " + (endTime - startTime) + " millisegundos");
 	}
@@ -82,6 +87,10 @@ class Grafo{
 	//Ex2.2-Nearest-neighbour first
 	void nnf(){
 		long startTime = System.currentTimeMillis();
+		System.out.println("Array de Original: ");
+		printArrayPontos();
+		System.out.println("\nNearest-neighbour first: ");
+					
 		int noInicial;
 		Random number= new Random(); 
 		noInicial=number.nextInt(this.tamanho); //Escolhe o nó inicial
@@ -114,6 +123,7 @@ class Grafo{
 			arrayC[indicemin]=arrayC[j+1];
 			arrayC[j+1]=a;
 		}
+		printArrayPontos(); //NOVA ORDEM
 		long endTime = System.currentTimeMillis();
 		System.out.println("\nDemorou " + (endTime - startTime) + " millisegundos");
 	}
@@ -230,16 +240,6 @@ class Grafo{
 		return (x.getX()*y.getX()) + (x.getY()*y.getY());
 	}
 		
-	//Ex4 e 5-Calcula o perimetro do poligono
-	double perimetro(Point2D[] array){
-		double soma=0;
-		for(int i=1;i<this.tamanho;i++){
-			soma+=array[i-1].distance(array[i]);
-		}
-		soma+=array[0].distance(array[this.tamanho-1]);
-		return soma;
-	}
-
 	//Ex 4-Algoritmo HiilClimbing com menor perimentro ou menor interseções
 	void hillClimbing(int op){
 		long startTime = System.currentTimeMillis();
@@ -375,6 +375,16 @@ class Grafo{
         return Math.exp((min - max) / aux);
     }
 
+	//Ex4 e 5-Calcula o perimetro do poligono
+	double perimetro(Point2D[] array){
+		double soma=0;
+		for(int i=1;i<this.tamanho;i++){
+			soma+=array[i-1].distance(array[i]);
+		}
+		soma+=array[0].distance(array[this.tamanho-1]);
+		return soma;
+	}
+
 	//Ex3 e 4-Imprime a lista de valores
 	void printLista(){
 		for(int i=0;i<this.lista.size();i++){
@@ -389,13 +399,12 @@ class Grafo{
 
 	//Ex 4 e 5-Imprime a solução final
 	void arrayFinal(Point2D[] a,double perimetro){
-		System.out.print("\nArray Solução: ");
+		System.out.println("\nArray Solução: ");
 		for(int i=0;i<this.tamanho;i++){
 			System.out.print("("+(int)a[i].getX() + ","+(int)a[i].getY()+")");
 		}
 		System.out.println("\nPerimetro: "+perimetro+"\n");
 	}
-
 
 	//Imprime a lista de valores
 	void printArrayPontos(){
@@ -421,12 +430,12 @@ public class RPG{
 			if(opcao>1 && opcao<6){
 				if(op1==false){
 					op1=true;
-					System.out.println("Para fazer o exercicio, temos que criar o array de pontos!\n");
+					System.out.println("ATENÇÃO: Para fazer o exercicio, temos que criar o array de pontos!\n");
 					garf=Ex1(garf);
 				}
-				if(op2==false){
+				if(op2==false && opcao!=2){
 					op2=true;
-					System.out.println("\n\nPara fazer o exercicio, tem que escolher um candidato a solução!\n");
+					System.out.println("\n\n\nATENÇÃO:Para fazer o exercicio, tem que escolher um candidato a solução!\n");
 					garf=Ex2(garf);
 				}
 			}
@@ -488,25 +497,18 @@ public class RPG{
 	public static Grafo Ex2(Grafo garf){
 		Scanner ler= new Scanner(System.in);
 		int opcao=0;
-		System.out.println("\n Ex2:\n ");
+		System.out.println("Ex2:\n ");
 		System.out.println("Escolha uma das seguintes alternativas para criar ligações:");
 		System.out.println("1-Gerar uma permutação qualquer dos pontos.");
 		System.out.println("2-Heuristica 'nearest-neighbour first'");
 		opcao=ler.nextInt();
 		clearScreen();
 		
-		System.out.print("      Array de Original: ");
-		garf.printArrayPontos();
-
 		switch(opcao){
-			case 1: System.out.print("   Permutação de pontos: ");
-					garf.permutation();
-					garf.printArrayPontos(); //NOVA ORDEM
+			case 1: garf.permutation();
 				    break;
 
-			case 2: System.out.print("Nearest-neighbour first: ");
-					garf.nnf();
-					garf.printArrayPontos();
+			case 2: garf.nnf();
 					break;
 			default: System.out.println("Opção errada, tente novamente!");
 
@@ -517,25 +519,27 @@ public class RPG{
 	public static Grafo Ex3(Grafo garf){
 		Scanner ler= new Scanner(System.in);
 
-		System.out.println("Ex3:\n");
-		System.out.print("       Array de Original: ");
-		garf.printArrayPontos();
-		System.out.println("    Vizinhaça 2-exchange:  ");
-
-		long startTime = System.currentTimeMillis();
-		garf.exchange(1);
-		long endTime = System.currentTimeMillis();
-		System.out.println("\nDemorou " + (endTime - startTime) + " millisegundos");
-
-
 		//Caso escolha o exercicio 3,  ele mostra a lista
 		//Caso a função for chamada no exercicio 4, ele so cria a lista
 		System.out.println("\n\nPretende visualizar a lista de candidatos? ");
 		System.out.println("0-Sim, Outro-Não");
 		int opcao=ler.nextInt();
+		clearScreen();
+
+		System.out.println("Ex3:\n");
+		System.out.println("Array de Original: ");
+		garf.printArrayPontos();
+		System.out.println("Vizinhaça 2-exchange:  ");
+
+		long startTime = System.currentTimeMillis();
+		garf.exchange(1);
+				
 		if(opcao==0)
 			garf.printLista();
 		System.out.println("Números de elementos da lista: "+garf.lista.size());
+
+		long endTime = System.currentTimeMillis();
+		System.out.println("\nDemorou " + (endTime - startTime) + " millisegundos");
 		return garf;
 	}
 
@@ -550,7 +554,7 @@ public class RPG{
 		int opcao= ler.nextInt();
 		clearScreen();
 
-		System.out.print("Original: ");
+		System.out.println("Original: ");
 		garf.printArrayPontos();
 		switch(opcao){
 			case 1: garf.hillClimbing(1);
