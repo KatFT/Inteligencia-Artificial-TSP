@@ -244,7 +244,7 @@ class Grafo{
 	void hillClimbing(int op){
 		long startTime = System.currentTimeMillis();
 		System.out.println("Original: ");
-		garf.printArrayPontos();
+		printArrayPontos();
 
 		this.bestSoFar=arrayC; //estado inicial
 		double perimetroMin=perimetro(this.bestSoFar);
@@ -342,7 +342,7 @@ class Grafo{
 	void simA(){
 		long startTime = System.currentTimeMillis();
 		System.out.println("Original:  ");
-		garf.printArrayPontos();
+		printArrayPontos();
 
 		this.bestSoFar=arrayC;
 		double auxTemp=(double)inter(arrayC); //temperatura
