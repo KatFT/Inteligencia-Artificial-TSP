@@ -338,6 +338,9 @@ class Grafo{
 	//Ex5-Simulated annealing, medida de custo cruzamentos de arestas
 	void simA(){
 		long startTime = System.currentTimeMillis();
+		System.out.println("Original:  ");
+		garf.printArrayPontos();
+		
 		this.bestSoFar=arrayC;
 		double auxTemp=(double)inter(arrayC); //temperatura
 		double perimetro=0.0;
@@ -577,8 +580,6 @@ public class RPG{
 		clearScreen();
 		System.out.println("Ex5:\n");
 		System.out.println("Aplicar simulated annealing. Usar como medida de custo o número de cruzamentos de arestas.");
-		System.out.println("Original:  ");
-		garf.printArrayPontos();
 		garf.simA();
 		return garf;
 	}
