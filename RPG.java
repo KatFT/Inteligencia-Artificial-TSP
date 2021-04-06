@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.LinkedList;
 
+
 class Reta{
 	public Point2D[] x;
 
@@ -34,6 +35,8 @@ class Grafo{
 
 	//Ex1-Funçao geradora de pontos random
 	void criacaoPontos(int n,int m){
+		long startTime = System.currentTimeMillis();
+
 		double x,y;
 		int indice=0;
 		Random seed= new Random();
@@ -46,6 +49,10 @@ class Grafo{
 				indice++;
 			}
 		}
+		System.out.print("Novo Array de pontos: ");
+		printArrayPontos();
+		long endTime = System.currentTimeMillis();
+		System.out.println("\nDemorou " + (endTime - startTime) + " millisegundos");
 	}
 
 	//Ex1-Verifica se os pontos já existem no array
@@ -60,6 +67,7 @@ class Grafo{
 
 	//Ex2.1-Permutação de pontos
 	void permutation(){
+		long startTime = System.currentTimeMillis();
 		Random number= new Random();
 		for(int i=1;i<this.tamanho;i++){
 			int swap= number.nextInt(this.tamanho);
@@ -67,10 +75,13 @@ class Grafo{
 			arrayC[swap]=arrayC[i];
 			arrayC[i]=aux;
 		}
+		long endTime = System.currentTimeMillis();
+		System.out.println("\nDemorou " + (endTime - startTime) + " millisegundos");
 	}
 
 	//Ex2.2-Nearest-neighbour first
 	void nnf(){
+		long startTime = System.currentTimeMillis();
 		int noInicial;
 		Random number= new Random(); 
 		noInicial=number.nextInt(this.tamanho); //Escolhe o nó inicial
@@ -103,6 +114,8 @@ class Grafo{
 			arrayC[indicemin]=arrayC[j+1];
 			arrayC[j+1]=a;
 		}
+		long endTime = System.currentTimeMillis();
+		System.out.println("\nDemorou " + (endTime - startTime) + " millisegundos");
 	}
 
 	//Ex3 e 4-Determinar a vizinhança obtida por (2-exchange)
@@ -151,10 +164,7 @@ class Grafo{
 				}
 			}
 		}
-		//Caso escolha o exercicio 3,  ele mostra a lista
-		//Caso a função for chamada no exercicio 4, ele so cria a lista
-		if(op==1)
-			printLista();
+
 	}
 
 	//Ex3 e 4-Verifica se os segmentos se intersetam
@@ -232,6 +242,7 @@ class Grafo{
 
 	//Ex 4-Algoritmo HiilClimbing com menor perimentro ou menor interseções
 	void hillClimbing(int op){
+		long startTime = System.currentTimeMillis();
 		this.bestSoFar=arrayC; //estado inicial
 		double perimetroMin=perimetro(this.bestSoFar);
 		double pBest=0.0, pCand=0.0; //Perimentros
@@ -259,6 +270,9 @@ class Grafo{
 			cont++;
 		}
 		arrayFinal(bestSoFar,perimetroMin);	
+
+		long endTime = System.currentTimeMillis();
+		System.out.println("\nDemorou " + (endTime - startTime) + " millisegundos");
 		System.out.println("Iterações do programa: " +cont);
 	}
 	
@@ -323,6 +337,7 @@ class Grafo{
 
 	//Ex5-Simulated annealing, medida de custo cruzamentos de arestas
 	void simA(){
+		long startTime = System.currentTimeMillis();
 		this.bestSoFar=arrayC;
 		double auxTemp=(double)inter(arrayC); //temperatura
 		double perimetro=0.0;
@@ -345,6 +360,8 @@ class Grafo{
 			cont++;
 		}
 		arrayFinal(bestSoFar,perimetro);
+		long endTime = System.currentTimeMillis();
+		System.out.println("\nDemorou " + (endTime - startTime) + " millisegundos");
 		System.out.println("Iterações do programa: " +cont);
 	}
 
@@ -465,8 +482,6 @@ public class RPG{
 		garf= new Grafo(n); 
 		garf.criacaoPontos(n,m);
 
-		System.out.print("Novo Array de pontos: ");
-		garf.printArrayPontos();
 		return garf;
 	}
 
@@ -500,11 +515,27 @@ public class RPG{
 	}
 
 	public static Grafo Ex3(Grafo garf){
+		Scanner ler= new Scanner(System.in);
+
 		System.out.println("Ex3:\n");
 		System.out.print("       Array de Original: ");
 		garf.printArrayPontos();
 		System.out.println("    Vizinhaça 2-exchange:  ");
+
+		long startTime = System.currentTimeMillis();
 		garf.exchange(1);
+		long endTime = System.currentTimeMillis();
+		System.out.println("\nDemorou " + (endTime - startTime) + " millisegundos");
+
+
+		//Caso escolha o exercicio 3,  ele mostra a lista
+		//Caso a função for chamada no exercicio 4, ele so cria a lista
+		System.out.println("\n\nPretende visualizar a lista de candidatos? ");
+		System.out.println("0-Sim, Outro-Não");
+		int opcao=ler.nextInt();
+		if(opcao==0)
+			garf.printLista();
+		System.out.println("Números de elementos da lista: "+garf.lista.size());
 		return garf;
 	}
 
@@ -519,25 +550,19 @@ public class RPG{
 		int opcao= ler.nextInt();
 		clearScreen();
 
+		System.out.print("Original: ");
+		garf.printArrayPontos();
 		switch(opcao){
-			case 1: System.out.print("Original: ");
-					garf.printArrayPontos();
-					garf.hillClimbing(1);
+			case 1: garf.hillClimbing(1);
 				    break;
 
-			case 2: System.out.print("Original:");
-					garf.printArrayPontos();
-					garf.hillClimbing(2);			
+			case 2: garf.hillClimbing(2);			
 					break;
 
-			case 3:	System.out.print("Original:");		
-					garf.printArrayPontos();
-					garf.hillClimbing(3);
+			case 3:	garf.hillClimbing(3);
 					break;
 
-			case 4: System.out.print("Original:");	
-					garf.printArrayPontos();
-					garf.hillClimbing(4);
+			case 4: garf.hillClimbing(4);
 					break;
 			default: System.out.println("Opção errada, tente novamente!");
 		}
