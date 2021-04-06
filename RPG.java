@@ -481,6 +481,10 @@ public class RPG{
 		System.out.println("3 - Determinar a vizinhança obtida por (2-exchange)");
 		System.out.println("4 - Aplicar melhoramento iterativo (hill climbing)");
 		System.out.println("5 - Aplicar simulated annealing");
+
+		System.out.println("NOTA: Caso pretenda criar um novo array, volte a escolher o ex.1!");
+		System.out.println("      Caso pretenda alterar as ligações do array, volte a escolher o ex. 2!");
+
 		System.out.println("Escolha o exercicio:");
 	}
 	
