@@ -340,7 +340,7 @@ class Grafo{
 		long startTime = System.currentTimeMillis();
 		System.out.println("Original:  ");
 		garf.printArrayPontos();
-		
+
 		this.bestSoFar=arrayC;
 		double auxTemp=(double)inter(arrayC); //temperatura
 		double perimetro=0.0;
@@ -456,8 +456,6 @@ public class RPG{
 						break;
 				case 5: garf=Ex5(garf);
 						break;
-				//case 6: 
-					//	break;
 				default: System.out.println("Opção errada, tente novamente!");
 			}
 			System.out.print("\n\n0(Sair) / Outro Número (Continuar)   ");
