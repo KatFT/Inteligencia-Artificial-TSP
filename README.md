@@ -1,10 +1,21 @@
-# TrabalhoIA
-Compilar e executar
+# Inteligência Artificial TSP
+
+O objetivo desde trabalho foi usar métodos de pesquisa local e pesquisa estocástica usando um problema de geração de polígonos simples para resolução de TSP.
+Os algoritmos/heurísticas implementados(as) foram os seguintes:
+- Permutação (Heurística)
+- Nearest-Neighbour First (Heurística)
+- Hill Climbing (Algoritmo)
+- Simulated Annealing (Algoritmo)
+
+--------------------------------------------------------------------
+
+## Compilar e executar
+
 javac RPG.java && java RPG
 Executar interface gráfica python:
 python3 Pontos.py
 
-Para visualização dos poligonos, temos um programa python que faz a representacao grafica.
+Para visualização dos poligonos, temos um programa python que faz a representação gráfica.
 
 Programa contem um menu informativo, cada numero corresponde ao numero do exercicio de avalição.
 
